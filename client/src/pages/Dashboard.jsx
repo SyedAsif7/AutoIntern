@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { 
   BookOpen, 
@@ -26,8 +26,10 @@ import {
   Zap,
   Terminal,
   Send,
-  Sparkles
+  Sparkles,
+  LogOut
 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import {
   Chart as ChartJS,
   RadialLinearScale,
@@ -50,17 +52,29 @@ ChartJS.register(
 );
 
 const Dashboard = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success('Logged out successfully');
+      navigate('/');
+    } catch (error) {
+      toast.error('Failed to log out');
+    }
+  };
   
   // Persistence logic for Hackathon Demo
   const getSavedName = () => {
-    const storageKey = currentUser ? `profileData_${currentUser.uid}` : 'profileData';
+    const isSyedAsif = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com';
+    const storageKey = isSyedAsif ? 'profileData' : `profileData_${currentUser?.uid}`;
     const savedData = localStorage.getItem(storageKey);
     if (savedData) {
       const parsed = JSON.parse(savedData);
       return parsed.name;
     }
-    return currentUser?.displayName || 'Student';
+    return currentUser?.displayName || (isSyedAsif ? 'Syed Asif' : 'New User');
   };
 
   const [userName, setUserName] = useState(getSavedName());
@@ -69,9 +83,11 @@ const Dashboard = () => {
   const [showReferral, setShowReferral] = useState(false);
   const [referralText, setReferralText] = useState('');
 
-  // Update name when currentUser or localStorage changes
+  // Update name if currentUser or localStorage changes
   useEffect(() => {
-    setUserName(getSavedName());
+    if (currentUser) {
+      setUserName(getSavedName());
+    }
     
     const handleStorageChange = () => {
       setUserName(getSavedName());
@@ -80,128 +96,140 @@ const Dashboard = () => {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [currentUser]);
   
-  // Gamification State for Hackathon Win
-  const [xp, setXp] = useState(2450);
-  const [level, setLevel] = useState(12);
-  const xpToNextLevel = 3000;
+  const isSyedAsif = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com';
+
+  // Gamification State
+  const [xp, setXp] = useState(isSyedAsif ? 2450 : 0);
+  const [level, setLevel] = useState(isSyedAsif ? 12 : 1);
+  const xpToNextLevel = isSyedAsif ? 3000 : 500;
   const xpPercentage = (xp / xpToNextLevel) * 100;
 
-  const studyNotes = [
-    {
-      title: 'React Hooks Mastery',
-      content: 'Understand useState for local state management and useEffect for handling side effects like data fetching or DOM updates. Remember that hooks must always be called at the top level of your component.',
-      icon: Target,
-      color: 'text-indigo-600',
-      bg: 'bg-indigo-50'
-    },
-    {
-      title: 'State vs Props',
-      content: 'Props are read-only and passed from parent to child, while State is managed within the component and can be changed. Never mutate state directly; always use the setter function.',
-      icon: ShieldCheck,
-      color: 'text-emerald-600',
-      bg: 'bg-emerald-50'
-    },
-    {
-      title: 'Component Lifecycle',
-      content: 'In modern React, we use useEffect to replicate lifecycle methods: [] for componentDidMount, dependencies for componentDidUpdate, and a return function for componentWillUnmount.',
-      icon: Clock,
-      color: 'text-amber-600',
-      bg: 'bg-amber-50'
-    }
-  ];
-  
-  const skillData = {
-    labels: ['React', 'Node.js', 'MongoDB', 'UI/UX', 'System Design', 'Soft Skills'],
-    datasets: [
-      {
-        label: 'Current Level',
-        data: [85, 40, 65, 90, 30, 75],
-        backgroundColor: 'rgba(79, 70, 229, 0.2)',
-        borderColor: 'rgba(79, 70, 229, 1)',
-        borderWidth: 2,
-        pointBackgroundColor: 'rgba(79, 70, 229, 1)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
+  // Update stats based on user
+   const stats = [
+     { label: 'Courses Enrolled', value: isSyedAsif ? '3' : '0', icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50', path: '/courses' },
+     { label: 'Current Streak', value: isSyedAsif ? '5 Days' : '0 Days', icon: Flame, color: 'text-orange-600', bg: 'bg-orange-50', path: '/dashboard' },
+     { label: 'Internships Saved', value: isSyedAsif ? '12' : '0', icon: Bookmark, color: 'text-blue-600', bg: 'bg-blue-50', path: '/internships' },
+     { label: 'Profile Completion', value: isSyedAsif ? '85%' : '20%', icon: UserCheck, color: 'text-emerald-600', bg: 'bg-emerald-50', path: '/profile' },
+   ];
+
+   const studyNotes = [
+     {
+       title: 'Getting Started',
+       content: 'Welcome to AutoIntern! Complete your profile and browse courses to start your journey.',
+       icon: Target,
+       color: 'text-indigo-600',
+       bg: 'bg-indigo-50'
+     },
+     {
+       title: 'Profile Completion',
+       content: 'A complete profile increases your chances of getting matched with the right internships by 80%.',
+       icon: ShieldCheck,
+       color: 'text-emerald-600',
+       bg: 'bg-emerald-50'
+     },
+     {
+       title: 'Skill Assessment',
+       content: 'Take our skill assessment tests to verify your knowledge and earn badges.',
+       icon: Clock,
+       color: 'text-amber-600',
+       bg: 'bg-amber-50'
+     }
+   ];
+   
+   const skillData = {
+     labels: ['React', 'Node.js', 'MongoDB', 'UI/UX', 'System Design', 'Soft Skills'],
+     datasets: [
+       {
+         label: 'Current Level',
+         data: isSyedAsif ? [85, 40, 65, 90, 30, 75] : [0, 0, 0, 0, 0, 0],
+         backgroundColor: 'rgba(79, 70, 229, 0.2)',
+         borderColor: 'rgba(79, 70, 229, 1)',
+         borderWidth: 2,
+         pointBackgroundColor: 'rgba(79, 70, 229, 1)',
+         pointBorderColor: '#fff',
+         pointHoverBackgroundColor: '#fff',
+         pointHoverBorderColor: 'rgba(79, 70, 229, 1)',
+       },
+       {
+         label: 'Target for Internships',
+         data: [90, 70, 70, 80, 60, 85],
+         backgroundColor: 'rgba(16, 185, 129, 0.1)',
+         borderColor: 'rgba(16, 185, 129, 0.5)',
+         borderWidth: 2,
+         borderDash: [5, 5],
+         pointBackgroundColor: 'rgba(16, 185, 129, 0.5)',
+         pointBorderColor: '#fff',
+         pointHoverBackgroundColor: '#fff',
+         pointHoverBorderColor: 'rgba(16, 185, 129, 0.5)',
+       },
+     ],
+   };
+
+   const chartOptions = {
+     scales: {
+       r: {
+         angleLines: {
+           display: true
+         },
+         suggestedMin: 0,
+         suggestedMax: 100,
+         ticks: {
+           stepSize: 20,
+           display: false
+         }
+       }
+     },
+     plugins: {
+       legend: {
+         position: 'bottom',
+         labels: {
+           usePointStyle: true,
+           padding: 20,
+           font: {
+             size: 12,
+             weight: 'bold'
+           }
+         }
+       }
+     },
+     maintainAspectRatio: false
+   };
+
+  const matchedInternships = isSyedAsif ? [
+      { 
+        title: 'Frontend Developer Intern', 
+        company: 'TechFlow Solutions', 
+        location: 'Remote', 
+        match: '98%', 
+        stipend: '₹15,000/mo',
+        domain: 'Web Dev'
       },
-      {
-        label: 'Target for Internships',
-        data: [90, 70, 70, 80, 60, 85],
-        backgroundColor: 'rgba(16, 185, 129, 0.1)',
-        borderColor: 'rgba(16, 185, 129, 0.5)',
-        borderWidth: 2,
-        borderDash: [5, 5],
-        pointBackgroundColor: 'rgba(16, 185, 129, 0.5)',
-        pointBorderColor: '#fff',
-        pointHoverBackgroundColor: '#fff',
-        pointHoverBorderColor: 'rgba(16, 185, 129, 0.5)',
+      { 
+        title: 'React.js Intern', 
+        company: 'DataScale AI', 
+        location: 'Hybrid', 
+        match: '92%', 
+        stipend: '₹12,000/mo',
+        domain: 'Web Dev'
       },
-    ],
-  };
-
-  const chartOptions = {
-    scales: {
-      r: {
-        angleLines: {
-          display: true
-        },
-        suggestedMin: 0,
-        suggestedMax: 100,
-        ticks: {
-          stepSize: 20,
-          display: false
-        }
+      { 
+        title: 'UI/UX Design Intern', 
+        company: 'CreativeDots', 
+        location: 'Onsite', 
+        match: '85%', 
+        stipend: '₹10,000/mo',
+        domain: 'UI/UX'
+      },
+    ] : [
+      { 
+        title: 'Web Dev Intern (Frontend)', 
+        company: 'StartupX', 
+        location: 'Remote', 
+        match: '65%', 
+        stipend: '₹8,000/mo',
+        domain: 'Web Dev'
       }
-    },
-    plugins: {
-      legend: {
-        position: 'bottom',
-        labels: {
-          usePointStyle: true,
-          padding: 20,
-          font: {
-            size: 12,
-            weight: 'bold'
-          }
-        }
-      }
-    },
-    maintainAspectRatio: false
-  };
-
-  const stats = [
-    { label: 'Courses Enrolled', value: '3', icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50', path: '/courses' },
-    { label: 'Current Streak', value: '5 Days', icon: Flame, color: 'text-orange-600', bg: 'bg-orange-50', path: '/dashboard' },
-    { label: 'Internships Saved', value: '12', icon: Bookmark, color: 'text-blue-600', bg: 'bg-blue-50', path: '/internships' },
-    { label: 'Profile Completion', value: '85%', icon: UserCheck, color: 'text-emerald-600', bg: 'bg-emerald-50', path: '/profile' },
-  ];
-
-  const matchedInternships = [
-    { 
-      title: 'Frontend Developer Intern', 
-      company: 'TechFlow Solutions', 
-      location: 'Remote', 
-      match: '98%', 
-      stipend: '₹15,000/mo',
-      domain: 'Web Dev'
-    },
-    { 
-      title: 'React.js Intern', 
-      company: 'DataScale AI', 
-      location: 'Hybrid', 
-      match: '92%', 
-      stipend: '₹12,000/mo',
-      domain: 'Web Dev'
-    },
-    { 
-      title: 'UI/UX Design Intern', 
-      company: 'CreativeDots', 
-      location: 'Onsite', 
-      match: '85%', 
-      stipend: '₹10,000/mo',
-      domain: 'UI/UX'
-    },
-  ];
+    ];
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gradient-to-br from-gray-50 via-indigo-50/30 to-gray-50">
@@ -220,20 +248,21 @@ const Dashboard = () => {
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-indigo-400/20 rounded-full blur-3xl" />
           
           <div className="relative flex flex-col md:flex-row md:items-end justify-between gap-6">
-            <div>
-              <h1 className="text-3xl md:text-5xl font-black text-white mb-4 tracking-tight leading-tight">
+            <div className="flex-1">
+              <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight leading-tight mb-4">
                 Good morning, {userName}! 👋
               </h1>
               <p className="text-indigo-100 font-medium text-lg flex flex-wrap items-center gap-3">
                 <span className="inline-flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-md rounded-2xl text-sm font-black border border-white/10 shadow-lg">
-                  <Flame className="h-5 w-5 fill-orange-500 text-orange-500 animate-pulse" /> Day 5 Streak
+                  <Flame className="h-5 w-5 fill-orange-500 text-orange-500 animate-pulse" /> {isSyedAsif ? 'Day 5' : 'Day 0'} Streak
                 </span>
-                <span className="text-indigo-100/90 font-bold">Keep the momentum going!</span>
+                <span className="text-indigo-100/90 font-bold">{isSyedAsif ? 'Keep the momentum going!' : 'Start your first streak today!'}</span>
               </p>
             </div>
 
-            {/* Hackathon Win: Gamification Level Bar */}
-            <div className="w-full md:w-80 bg-white/10 backdrop-blur-md p-5 rounded-[2rem] border border-white/20 shadow-2xl">
+            <div className="flex flex-col md:flex-row items-center gap-4">
+              {/* Hackathon Win: Gamification Level Bar */}
+              <div className="w-full md:w-80 bg-white/10 backdrop-blur-md p-5 rounded-[2rem] border border-white/20 shadow-2xl">
               <div className="flex justify-between items-end mb-3">
                 <div className="flex flex-col">
                   <span className="text-[10px] font-black text-indigo-200 uppercase tracking-widest mb-1">Current Level</span>
@@ -263,6 +292,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+      </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 -mt-6 relative z-10">
@@ -285,119 +315,182 @@ const Dashboard = () => {
           <div className="lg:col-span-2 space-y-8">
             
             {/* Course Completion / Career Achievement */}
-            <section id="course-completion">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-                  <CheckCircle2 className="h-6 w-6 text-emerald-500" /> Course Completed
-                </h2>
-                <span className="px-4 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-black rounded-xl border border-emerald-200 uppercase tracking-widest shadow-sm">
-                  Graduated
-                </span>
-              </div>
-              <div className="bg-gradient-to-br from-white via-emerald-50/20 to-white p-8 rounded-3xl border border-emerald-100 shadow-xl shadow-emerald-100/30 hover:shadow-2xl hover:shadow-emerald-200/40 transition-all duration-500 flex flex-col md:flex-row items-center gap-6 group">
-                <div className="w-full md:w-40 h-28 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-105 transition-transform duration-300">
-                  <Trophy className="h-16 w-16 text-white" />
+            {isSyedAsif && (
+              <section id="course-completion">
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+                    <CheckCircle2 className="h-6 w-6 text-emerald-500" /> Course Completed
+                  </h2>
+                  <span className="px-4 py-1.5 bg-emerald-50 text-emerald-700 text-xs font-black rounded-xl border border-emerald-200 uppercase tracking-widest shadow-sm">
+                    Graduated
+                  </span>
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Professional Path</span>
-                    <span className="text-xs text-gray-400 font-medium">Completed on March 25, 2026</span>
+                <div className="bg-gradient-to-br from-white via-emerald-50/20 to-white p-8 rounded-3xl border border-emerald-100 shadow-xl shadow-emerald-100/30 hover:shadow-2xl hover:shadow-emerald-200/40 transition-all duration-500 flex flex-col md:flex-row items-center gap-6 group">
+                  <div className="w-full md:w-40 h-28 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:scale-105 transition-transform duration-300">
+                    <Trophy className="h-16 w-16 text-white" />
                   </div>
-                  <h3 className="text-2xl font-black text-gray-900 mb-2">Full Stack Web Development</h3>
-                  <p className="text-sm text-gray-600 font-medium mb-4 leading-relaxed">
-                    Mastered modern web architecture, frontend frameworks, and scalable backend systems.
-                  </p>
-                  <div className="flex items-center gap-4">
-                    <div className="flex -space-x-2">
-                      {[1, 2, 3, 4].map(i => (
-                        <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-600 shadow-sm">
-                          {['R', 'N', 'M', 'P'][i-1]}
-                        </div>
-                      ))}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded">Professional Path</span>
+                      <span className="text-xs text-gray-400 font-medium">Completed on March 25, 2026</span>
                     </div>
-                    <span className="text-xs font-bold text-gray-500">+12 Skills Verified</span>
+                    <h3 className="text-2xl font-black text-gray-900 mb-2">Full Stack Web Development</h3>
+                    <p className="text-sm text-gray-600 font-medium mb-4 leading-relaxed">
+                      Mastered modern web architecture, frontend frameworks, and scalable backend systems.
+                    </p>
+                    <div className="flex items-center gap-4">
+                      <div className="flex -space-x-2">
+                        {[1, 2, 3, 4].map(i => (
+                          <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-indigo-100 flex items-center justify-center text-[10px] font-bold text-indigo-600 shadow-sm">
+                            {['R', 'N', 'M', 'P'][i-1]}
+                          </div>
+                        ))}
+                      </div>
+                      <span className="text-xs font-bold text-gray-500">+12 Skills Verified</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-3 w-full md:w-auto">
+                    <button 
+                      onClick={() => setShowPortfolio(true)}
+                      className="w-full md:w-auto px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black rounded-xl shadow-lg shadow-emerald-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
+                    >
+                      View Portfolio
+                    </button>
                   </div>
                 </div>
-                <div className="flex flex-col gap-3 w-full md:w-auto">
-                  <button 
-                    onClick={() => setShowPortfolio(true)}
-                    className="w-full md:w-auto px-8 py-3.5 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-black rounded-xl shadow-lg shadow-emerald-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
-                  >
-                    View Portfolio
-                  </button>
+              </section>
+            )}
+
+            {!isSyedAsif && (
+              <section id="welcome-new-user">
+                <div className="bg-gradient-to-br from-brand/10 via-white to-brand/5 p-8 rounded-3xl border border-brand/20 shadow-xl shadow-brand/5 transition-all duration-500">
+                  <div className="flex flex-col md:flex-row items-center gap-8">
+                    <div className="w-24 h-24 bg-brand rounded-2xl flex items-center justify-center shadow-lg">
+                      <Sparkles className="h-12 w-12 text-white" />
+                    </div>
+                    <div className="flex-1 text-center md:text-left">
+                      <h2 className="text-3xl font-black text-gray-900 mb-2">Welcome to Your Career Journey!</h2>
+                      <p className="text-lg text-gray-600 font-medium mb-6">
+                        You're just a few steps away from landing your dream internship. Start by completing your profile or browsing our courses.
+                      </p>
+                      <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                        <Link to="/profile" className="px-8 py-3 bg-brand text-white font-black rounded-xl shadow-lg hover:shadow-xl transition-all">
+                          Complete Profile
+                        </Link>
+                        <Link to="/courses" className="px-8 py-3 bg-white border-2 border-brand/20 text-brand font-black rounded-xl hover:bg-brand/5 transition-all">
+                          Browse Courses
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </section>
+              </section>
+            )}
 
             {/* Continue Learning - Ongoing Courses */}
-            <section>
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
-                  <BookOpen className="h-6 w-6 text-brand" /> Continue Learning
-                </h2>
-                <Link to="/courses">
-                  <button className="group px-5 py-2.5 bg-white border-2 border-indigo-100 text-brand text-sm font-bold rounded-xl hover:bg-indigo-50 transition-all flex items-center gap-2">
-                    All Courses <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </button>
-                </Link>
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Ongoing Course 1 */}
-                <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/40 hover:shadow-2xl transition-all duration-300 group">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:rotate-3 transition-transform">
-                      <Target className="h-7 w-7 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-black text-gray-900 leading-tight">Advanced System Design</h3>
-                      <p className="text-xs text-gray-500 font-bold mt-1 uppercase tracking-wider">Backend Architecture</p>
-                    </div>
-                  </div>
-                  <div className="mb-4">
-                    <div className="flex justify-between text-[10px] font-black text-gray-600 mb-2">
-                      <span>Course Progress</span>
-                      <span className="text-brand">75%</span>
-                    </div>
-                    <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                      <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full w-[75%] rounded-full transition-all duration-500" />
-                    </div>
-                  </div>
-                  <Link to="/learning/advanced-system-design">
-                    <button className="w-full py-3 bg-gray-50 text-gray-700 text-xs font-black rounded-xl hover:bg-brand hover:text-white transition-all duration-300">
-                      Resume Module
+            {isSyedAsif ? (
+              <section>
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+                    <BookOpen className="h-6 w-6 text-brand" /> Continue Learning
+                  </h2>
+                  <Link to="/courses">
+                    <button className="group px-5 py-2.5 bg-white border-2 border-indigo-100 text-brand text-sm font-bold rounded-xl hover:bg-indigo-50 transition-all flex items-center gap-2">
+                      All Courses <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </Link>
                 </div>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  {/* Ongoing Course 1 */}
+                  <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/40 hover:shadow-2xl transition-all duration-300 group">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:rotate-3 transition-transform">
+                        <Target className="h-7 w-7 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-black text-gray-900 leading-tight">Advanced System Design</h3>
+                        <p className="text-xs text-gray-500 font-bold mt-1 uppercase tracking-wider">Backend Architecture</p>
+                      </div>
+                    </div>
+                    <div className="mb-4">
+                      <div className="flex justify-between text-[10px] font-black text-gray-600 mb-2">
+                        <span>Course Progress</span>
+                        <span className="text-brand">75%</span>
+                      </div>
+                      <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                        <div className="bg-gradient-to-r from-blue-500 to-indigo-600 h-full w-[75%] rounded-full transition-all duration-500" />
+                      </div>
+                    </div>
+                    <Link to="/learning/advanced-system-design">
+                      <button className="w-full py-3 bg-gray-50 text-gray-700 text-xs font-black rounded-xl hover:bg-brand hover:text-white transition-all duration-300">
+                        Resume Module
+                      </button>
+                    </Link>
+                  </div>
 
-                {/* Ongoing Course 2 */}
-                <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/40 hover:shadow-2xl transition-all duration-300 group">
-                  <div className="flex items-start gap-4 mb-4">
-                    <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:rotate-3 transition-transform">
-                      <ShieldCheck className="h-7 w-7 text-white" />
+                  {/* Ongoing Course 2 */}
+                  <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/40 hover:shadow-2xl transition-all duration-300 group">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className="w-14 h-14 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:rotate-3 transition-transform">
+                        <ShieldCheck className="h-7 w-7 text-white" />
+                      </div>
+                      <div>
+                        <h3 className="font-black text-gray-900 leading-tight">AI & LLM Integration</h3>
+                        <p className="text-xs text-gray-500 font-bold mt-1 uppercase tracking-wider">Modern AI Engineering</p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-black text-gray-900 leading-tight">AI & LLM Integration</h3>
-                      <p className="text-xs text-gray-500 font-bold mt-1 uppercase tracking-wider">Modern AI Engineering</p>
+                    <div className="mb-4">
+                      <div className="flex justify-between text-[10px] font-black text-gray-600 mb-2">
+                        <span>Course Progress</span>
+                        <span className="text-pink-600">30%</span>
+                      </div>
+                      <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                        <div className="bg-gradient-to-r from-purple-500 to-pink-600 h-full w-[30%] rounded-full transition-all duration-500" />
+                      </div>
                     </div>
+                    <Link to="/learning/ai-integration">
+                      <button className="w-full py-3 bg-gray-50 text-gray-700 text-xs font-black rounded-xl hover:bg-pink-600 hover:text-white transition-all duration-300">
+                        Resume Module
+                      </button>
+                    </Link>
                   </div>
-                  <div className="mb-4">
-                    <div className="flex justify-between text-[10px] font-black text-gray-600 mb-2">
-                      <span>Course Progress</span>
-                      <span className="text-pink-600">30%</span>
-                    </div>
-                    <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
-                      <div className="bg-gradient-to-r from-purple-500 to-pink-600 h-full w-[30%] rounded-full transition-all duration-500" />
-                    </div>
-                  </div>
-                  <Link to="/learning/ai-integration">
-                    <button className="w-full py-3 bg-gray-50 text-gray-700 text-xs font-black rounded-xl hover:bg-pink-600 hover:text-white transition-all duration-300">
-                      Resume Module
+                </div>
+              </section>
+            ) : (
+              <section>
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+                    <BookOpen className="h-6 w-6 text-brand" /> Recommended Courses
+                  </h2>
+                  <Link to="/courses">
+                    <button className="group px-5 py-2.5 bg-white border-2 border-indigo-100 text-brand text-sm font-bold rounded-xl hover:bg-indigo-50 transition-all flex items-center gap-2">
+                      Browse All <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </button>
                   </Link>
                 </div>
-              </div>
-            </section>
+                <div className="grid md:grid-cols-2 gap-6">
+                  <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/40 hover:shadow-2xl transition-all duration-300">
+                    <h3 className="font-black text-gray-900 mb-2">Web Development for Beginners</h3>
+                    <p className="text-sm text-gray-500 mb-4">Start your journey with HTML, CSS, and JavaScript.</p>
+                    <Link to="/courses/web-dev-beginners">
+                      <button className="w-full py-3 bg-brand text-white text-xs font-black rounded-xl hover:bg-brand-dark transition-all">
+                        Enroll Now
+                      </button>
+                    </Link>
+                  </div>
+                  <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/40 hover:shadow-2xl transition-all duration-300">
+                    <h3 className="font-black text-gray-900 mb-2">UI/UX Design Fundamentals</h3>
+                    <p className="text-sm text-gray-500 mb-4">Learn the basics of user interface and experience design.</p>
+                    <Link to="/courses/ui-ux-fundamentals">
+                      <button className="w-full py-3 bg-brand text-white text-xs font-black rounded-xl hover:bg-brand-dark transition-all">
+                        Enroll Now
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              </section>
+            )}
 
             {/* Recommended Next Step */}
             <section>
@@ -758,7 +851,12 @@ const Dashboard = () => {
         {/* Tooltip */}
         <div className="absolute bottom-20 right-0 w-64 bg-slate-900 text-white p-4 rounded-2xl shadow-2xl opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all pointer-events-none">
           <p className="text-xs font-black uppercase tracking-widest text-indigo-400 mb-2">AI Career Coach</p>
-          <p className="text-sm font-medium leading-relaxed">"Hi Syed! I've analyzed your new skills. You're now a 98% match for the Frontend Intern role!"</p>
+          <p className="text-sm font-medium leading-relaxed">
+            {isSyedAsif 
+              ? `"Hi Syed! I've analyzed your new skills. You're now a 98% match for the Frontend Intern role!"`
+              : `"Welcome! I'm your AI career coach. Let's start by completing your profile to find the best internship matches for you."`
+            }
+          </p>
           <div className="absolute bottom-0 right-6 translate-y-1/2 rotate-45 w-3 h-3 bg-slate-900" />
         </div>
       </div>

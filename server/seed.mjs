@@ -16,6 +16,7 @@ const samples = [
     description: "Build UI components for a B2B dashboard.",
     applyLink: "#",
     isActive: true,
+    
   },
   {
     title: "ML Engineering Intern",

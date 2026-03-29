@@ -20,6 +20,18 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
+const __dirname = process.cwd();
+console.log(__dirname);
+console.log(CLIENT_URL);
+console.log(__dirname);
+const corsMiddleware = cors();
+app.use(corsMiddleware);
+console.log(corsMiddleware);
+const jsonMiddleware = express.json();
+app.use(jsonMiddleware);
+console.log(jsonMiddleware);
+
 
 // Rate Limiting
 const limiter = rateLimit({

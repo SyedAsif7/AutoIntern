@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import { 
   User, 
@@ -15,52 +16,68 @@ import {
   Trash2, 
   Upload,
   CheckCircle2,
-  X
+  X,
+  LogOut
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 
 const Profile = () => {
-  const { currentUser } = useAuth();
+  const { currentUser, logout } = useAuth();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success('Logged out successfully');
+      navigate('/');
+    } catch (error) {
+      toast.error('Failed to log out');
+    }
+  };
   
   // Persistence logic for Hackathon Demo
   const getInitialData = () => {
-    const storageKey = currentUser ? `profileData_${currentUser.uid}` : 'profileData';
+    const storageKey = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com' ? 'profileData' : `profileData_${currentUser?.uid}`;
     const savedData = localStorage.getItem(storageKey);
     if (savedData) return JSON.parse(savedData);
     
-    // Default data for new users or when not logged in
+    // Default data for new users or Syed Asif if no saved data
+    const isSyedAsif = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com';
+    
     return {
-      name: currentUser?.displayName || 'Student Name',
-      email: currentUser?.email || 'email@example.com',
-      phone: '9876543210',
-      college: 'Not Specified',
-      branch: 'Not Specified',
-      year: '1',
-      city: 'Not Specified',
-      bio: 'Tell us about yourself!',
-      skills: ['React', 'JavaScript'],
-      linkedinUrl: '',
-      githubUrl: '',
-      portfolioUrl: '',
+      name: currentUser?.displayName || (isSyedAsif ? 'Syed Asif' : 'New User'),
+      email: currentUser?.email || (isSyedAsif ? 'syedgaffarsyedrajjak1@gmail.com' : ''),
+      phone: isSyedAsif ? '9876543210' : '',
+      college: isSyedAsif ? 'VJTI Mumbai' : 'Not Specified',
+      branch: isSyedAsif ? 'Computer Engineering' : 'Not Specified',
+      year: isSyedAsif ? '3' : '1',
+      city: isSyedAsif ? 'Mumbai' : 'Not Specified',
+      bio: isSyedAsif ? 'Passionate full-stack developer interested in React and Node.js.' : '',
+      skills: isSyedAsif ? ['React', 'JavaScript', 'Tailwind CSS', 'Node.js', 'MongoDB'] : [],
+      linkedinUrl: isSyedAsif ? 'https://linkedin.com/in/adityasharma' : '',
+      githubUrl: isSyedAsif ? 'https://github.com/adityasharma' : '',
+      portfolioUrl: isSyedAsif ? 'https://aditya.dev' : '',
       isPublic: true,
     };
   };
 
   const [formData, setFormData] = useState(getInitialData());
   const [profilePic, setProfilePic] = useState(() => {
-    const storageKey = currentUser ? `profilePic_${currentUser.uid}` : 'profilePic';
+    const storageKey = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com' ? 'profilePic' : `profilePic_${currentUser?.uid}`;
     return localStorage.getItem(storageKey) || null;
   });
   const [newSkill, setNewSkill] = useState('');
   const [showSkillInput, setShowSkillInput] = useState(false);
 
-  // Update form data when currentUser changes
+  // Update form data when currentUser changes (e.g., on login)
   useEffect(() => {
-    setFormData(getInitialData());
-    const picKey = currentUser ? `profilePic_${currentUser.uid}` : 'profilePic';
-    setProfilePic(localStorage.getItem(picKey) || null);
+    if (currentUser) {
+      setFormData(getInitialData());
+      const picKey = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com' ? 'profilePic' : `profilePic_${currentUser?.uid}`;
+      setProfilePic(localStorage.getItem(picKey) || null);
+    }
   }, [currentUser]);
 
   const handlePicUpload = (e) => {
@@ -70,7 +87,7 @@ const Profile = () => {
       reader.onloadend = () => {
         const base64String = reader.result;
         setProfilePic(base64String);
-        const picKey = currentUser ? `profilePic_${currentUser.uid}` : 'profilePic';
+        const picKey = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com' ? 'profilePic' : `profilePic_${currentUser?.uid}`;
         localStorage.setItem(picKey, base64String);
       };
       reader.readAsDataURL(file);
@@ -93,12 +110,9 @@ const Profile = () => {
     e.preventDefault();
     setLoading(true);
     
-    // Persist to localStorage with user-specific key
-    const storageKey = currentUser ? `profileData_${currentUser.uid}` : 'profileData';
+    // Persist to localStorage
+    const storageKey = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com' ? 'profileData' : `profileData_${currentUser?.uid}`;
     localStorage.setItem(storageKey, JSON.stringify(formData));
-    
-    // Trigger storage event for other components (like Dashboard)
-    window.dispatchEvent(new Event('storage'));
     
     // Mock API call
     setTimeout(() => {
@@ -110,8 +124,7 @@ const Profile = () => {
   const handleCancel = () => {
     // Reset to last saved state from localStorage
     setFormData(getInitialData());
-    const picKey = currentUser ? `profilePic_${currentUser.uid}` : 'profilePic';
-    setProfilePic(localStorage.getItem(picKey) || null);
+    setProfilePic(localStorage.getItem('profilePic') || null);
     toast('Changes discarded', { icon: 'ℹ️' });
   };
 
@@ -127,9 +140,18 @@ const Profile = () => {
       <Sidebar />
       <main className="flex-1 p-4 md:p-8 pb-24 md:pb-8 overflow-y-auto">
         <div className="max-w-4xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
-            <p className="text-gray-600">Manage your personal information and account settings</p>
+          <div className="mb-8 flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">My Profile</h1>
+              <p className="text-gray-600">Manage your personal information and account settings</p>
+            </div>
+            <button 
+              onClick={handleLogout}
+              className="flex items-center gap-2 px-6 py-2.5 bg-red-50 text-red-600 font-bold rounded-2xl border border-red-100 hover:bg-red-100 transition-all shadow-sm"
+            >
+              <LogOut className="h-5 w-5" />
+              <span className="hidden md:inline">Log Out</span>
+            </button>
           </div>
 
           <form onSubmit={handleSave} className="space-y-8">

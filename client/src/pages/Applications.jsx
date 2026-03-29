@@ -130,58 +130,73 @@ const Applications = () => {
   
   // Mock Data for Hackathon Demo Persistence
   const getInitialItems = () => {
-    const storageKey = currentUser ? `applicationTracker_${currentUser.uid}` : 'applicationTracker';
+    const isSyedAsif = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com';
+    const storageKey = isSyedAsif ? 'applicationTracker' : `applicationTracker_${currentUser?.uid}`;
     const saved = localStorage.getItem(storageKey);
     if (saved) return JSON.parse(saved);
+    
+    if (isSyedAsif) {
+      return {
+        saved: [
+          { id: '1', role: 'Backend Developer Intern', company: 'Google', location: 'Remote', date: 'Mar 20, 2026', boosted: true },
+          { id: '4', role: 'Systems Engineer', company: 'Microsoft', location: 'Remote', date: 'Mar 10, 2026', boosted: true },
+        ],
+        applied: [],
+        shortlisted: [
+          { id: '2', role: 'Full Stack Intern', company: 'Meta', location: 'Hybrid', date: 'Mar 22, 2026', boosted: false },
+        ],
+        interview: [],
+        offered: [
+          { id: '5', role: 'Summer Research Fellowship (SRFP)', company: 'IIT Delhi', location: 'New Delhi', date: 'Apr 03, 2026', boosted: false, stipend: '₹2,000/week' },
+        ],
+        rejected: [],
+      };
+    }
+    
+    // Default empty state for new users
     return {
-      saved: [
-        { id: '1', role: 'Backend Developer Intern', company: 'Google', location: 'Remote', date: 'Mar 20, 2026', boosted: true },
-        { id: '4', role: 'Systems Engineer', company: 'Microsoft', location: 'Remote', date: 'Mar 10, 2026', boosted: true },
-      ],
+      saved: [],
       applied: [],
-      shortlisted: [
-        { id: '2', role: 'Full Stack Intern', company: 'Meta', location: 'Hybrid', date: 'Mar 22, 2026', boosted: false },
-      ],
+      shortlisted: [],
       interview: [],
-      offered: [
-        { id: '5', role: 'Summer Research Fellowship (SRFP)', company: 'IIT Delhi', location: 'New Delhi', date: 'Apr 03, 2026', boosted: false, stipend: '₹2,000/week' },
-      ],
+      offered: [],
       rejected: [],
     };
   };
 
   const [items, setItems] = useState(() => {
     const initial = getInitialItems();
+    const isSyedAsif = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com';
     
-    // 1. Force remove specific IDs to prevent duplicates/incorrect states
-    // id 3: Node.js Developer (requested to remove)
-    // id 4: Systems Engineer Microsoft (requested to be in saved)
-    // id 5: IIT Delhi SRFP (requested to be in offered)
-    Object.keys(initial).forEach(key => {
-      if (Array.isArray(initial[key])) {
-        initial[key] = initial[key].filter(item => 
-          item.id !== '3' && 
-          item.id !== '4' && 
-          item.id !== '5' &&
-          !item.role?.includes('IIT Delhi') && // Robust check
-          !item.company?.includes('IIT Delhi')
-        );
-      }
-    });
+    if (isSyedAsif) {
+      // 1. Force remove specific IDs to prevent duplicates/incorrect states
+      Object.keys(initial).forEach(key => {
+        if (Array.isArray(initial[key])) {
+          initial[key] = initial[key].filter(item => 
+            item.id !== '3' && 
+            item.id !== '4' && 
+            item.id !== '5' &&
+            !item.role?.includes('IIT Delhi') && 
+            !item.company?.includes('IIT Delhi')
+          );
+        }
+      });
 
-    // 2. Force add/relocate entries to their correct columns
-    initial.offered = [
-      ...initial.offered,
-      { id: '5', role: 'Summer Research Fellowship (SRFP)', company: 'IIT Delhi', location: 'New Delhi', date: 'Apr 03, 2026', boosted: false, stipend: '₹2,000/week' }
-    ];
+      // 2. Force add/relocate entries to their correct columns
+      initial.offered = [
+        ...initial.offered,
+        { id: '5', role: 'Summer Research Fellowship (SRFP)', company: 'IIT Delhi', location: 'New Delhi', date: 'Apr 03, 2026', boosted: false, stipend: '₹2,000/week' }
+      ];
 
-    initial.saved = [
-      ...initial.saved,
-      { id: '4', role: 'Systems Engineer', company: 'Microsoft', location: 'Remote', date: 'Mar 10, 2026', boosted: true }
-    ];
+      initial.saved = [
+        ...initial.saved,
+        { id: '4', role: 'Systems Engineer', company: 'Microsoft', location: 'Remote', date: 'Mar 10, 2026', boosted: true }
+      ];
+    }
 
     return initial;
   });
+
   const [activeId, setActiveId] = useState(null);
 
   useEffect(() => {
@@ -192,15 +207,13 @@ const Applications = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Update items when currentUser changes
-  useEffect(() => {
-    setItems(getInitialItems());
-  }, [currentUser]);
-
   // Save to localStorage whenever items change
   useEffect(() => {
-    const storageKey = currentUser ? `applicationTracker_${currentUser.uid}` : 'applicationTracker';
-    localStorage.setItem(storageKey, JSON.stringify(items));
+    if (currentUser) {
+      const isSyedAsif = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com';
+      const storageKey = isSyedAsif ? 'applicationTracker' : `applicationTracker_${currentUser?.uid}`;
+      localStorage.setItem(storageKey, JSON.stringify(items));
+    }
   }, [items, currentUser]);
 
   const sensors = useSensors(

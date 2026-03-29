@@ -69,7 +69,7 @@ export const downloadPDFReport = async (req, res) => {
     let enrollment;
     if (id === 'sample-syed-asif') {
       enrollment = {
-        studentId: { name: "Student Name", profile: { college: "Engineering College", branch: "Computer Engineering" } },
+        studentId: { name: "Syed Asif", profile: { college: "Engineering College", branch: "Computer Engineering" } },
         courseId: { title: "Full Stack Web Development", duration: 8, level: "Intermediate" },
         completedAt: new Date()
       };
@@ -191,7 +191,7 @@ export const downloadPDFReport = async (req, res) => {
     doc.rect(50, recY, width - 100, 100, 10).fill('#f1f5f9');
     doc.fillColor('#4f46e5').fontSize(11).font('Helvetica-Bold').text('AI MENTOR INSIGHTS', 70, recY + 15);
     doc.fillColor('#1e293b').fontSize(10).font('Helvetica-Oblique').text(
-      `"${enrollment.studentId.name} has demonstrated a robust understanding of both frontend and backend paradigms. His ability to architect scalable solutions and maintain high code quality standards is exceptional. He is highly recommended for full-stack engineering roles."`,
+      `"Syed Asif has demonstrated a robust understanding of both frontend and backend paradigms. His ability to architect scalable solutions and maintain high code quality standards is exceptional. He is highly recommended for full-stack engineering roles."`,
       70, recY + 35, { width: width - 140, lineHeight: 1.5 }
     );
 
@@ -216,10 +216,10 @@ export const downloadCertificate = async (req, res) => {
     // Handle Sample Preview Case
     if (id === 'sample-syed-asif') {
       enrollment = {
-        studentId: { name: "Student Name", profile: { college: "Engineering College" } },
+        studentId: { name: "Syed Asif", profile: { college: "Engineering College" } },
         courseId: { title: "Full Stack Web Development" }
       };
-      certId = "AIC-2026-SN-0042";
+      certId = "AIC-2026-SA-0042";
     } else {
       enrollment = await Enrollment.findById(id).populate('courseId').populate('studentId');
       if (!enrollment) return res.status(404).json({ error: 'Enrollment not found' });

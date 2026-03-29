@@ -1,25 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { Award, ShieldCheck, MapPin, Calendar, Globe, User, Briefcase, CheckCircle2, ArrowLeft, Home } from 'lucide-react';
 
 const SampleCertificate = () => {
-  const { currentUser } = useAuth();
-
-  // Get student data from Profile persistence logic
-  const getStudentName = () => {
-    const storageKey = currentUser ? `profileData_${currentUser.uid}` : 'profileData';
-    const savedData = localStorage.getItem(storageKey);
-    if (savedData) {
-      const parsed = JSON.parse(savedData);
-      return parsed.name;
-    }
-    return currentUser?.displayName || "Student Name";
-  };
-
-  const studentName = getStudentName();
-  const certId = `AIC-2026-${studentName.split(' ').map(n => n[0]).join('')}-0042`;
-
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4 md:p-10 font-serif">
       {/* Navigation Bar */}
@@ -85,8 +68,8 @@ const SampleCertificate = () => {
                 <Globe className="w-3 h-3" />
                 <span className="text-[10px] font-bold font-sans tracking-widest">VERIFIED CREDENTIAL</span>
               </div>
-              <p className="text-[10px] font-mono text-slate-400">ID: {certId}</p>
-              <p className="text-[9px] font-mono text-slate-300 mt-1">{currentUser?.email || 'student@example.com'}</p>
+              <p className="text-[10px] font-mono text-slate-400">ID: AIC-2026-SA-0042</p>
+              <p className="text-[9px] font-mono text-slate-300 mt-1">syedgaffarsyedrajjak1@gmail.com</p>
             </div>
           </div>
           <div className="mb-14 relative">
@@ -112,7 +95,7 @@ const SampleCertificate = () => {
 
             <div className="relative inline-block px-12 py-4">
               <div className="absolute inset-0 bg-indigo-50/30 -skew-x-12 rounded-lg" />
-              <h3 className="text-6xl font-black text-slate-900 tracking-tight relative z-10">{studentName}</h3>
+              <h3 className="text-6xl font-black text-slate-900 tracking-tight relative z-10">Syed Asif</h3>
             </div>
 
             <p className="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed mt-8">

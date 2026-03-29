@@ -41,13 +41,20 @@ const Onboarding = () => {
     e.preventDefault();
     try {
       setLoading(true);
-      // In a real app, you'd send this to your backend
-      // await axios.post(`${import.meta.env.VITE_API_URL}/api/users/profile`, {
-      //   uid: currentUser.uid,
-      //   email: currentUser.email,
-      //   ...formData
-      // });
-      console.log('Profile saved:', formData);
+      
+      // Save to user-specific localStorage key
+      const isSyedAsif = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com';
+      const storageKey = isSyedAsif ? 'profileData' : `profileData_${currentUser?.uid}`;
+      
+      const profileData = {
+        ...formData,
+        email: currentUser?.email,
+        isPublic: true,
+      };
+      
+      localStorage.setItem(storageKey, JSON.stringify(profileData));
+      
+      console.log('Profile saved:', profileData);
       navigate('/dashboard');
     } catch (err) {
       console.error('Error saving profile:', err);
@@ -71,8 +78,8 @@ const Onboarding = () => {
             ))}
           </div>
           <h2 className="text-2xl font-bold text-gray-900">
-            {step === 1 && 'Personal Information'}
-            {step === 2 && 'Academic Background'}
+            {step === 1 && 'Personal Details'}
+            {step === 2 && 'Academic Details'}
             {step === 3 && 'Career Goals'}
           </h2>
           <p className="text-gray-600">Step {step} of 3</p>
@@ -86,9 +93,19 @@ const Onboarding = () => {
                 <input
                   type="text"
                   required
+                  placeholder="Full Name"
                   className="mt-1 block w-full border-gray-300 rounded-lg focus:ring-brand focus:border-brand"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email Address</label>
+                <input
+                  type="email"
+                  disabled
+                  className="mt-1 block w-full border-gray-300 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed"
+                  value={currentUser?.email || ''}
                 />
               </div>
               <div>
@@ -96,19 +113,10 @@ const Onboarding = () => {
                 <input
                   type="tel"
                   required
+                  placeholder="Phone Number"
                   className="mt-1 block w-full border-gray-300 rounded-lg focus:ring-brand focus:border-brand"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">College Name</label>
-                <input
-                  type="text"
-                  required
-                  className="mt-1 block w-full border-gray-300 rounded-lg focus:ring-brand focus:border-brand"
-                  value={formData.college}
-                  onChange={(e) => setFormData({ ...formData, college: e.target.value })}
                 />
               </div>
               <div>
@@ -116,6 +124,7 @@ const Onboarding = () => {
                 <input
                   type="text"
                   required
+                  placeholder="City"
                   className="mt-1 block w-full border-gray-300 rounded-lg focus:ring-brand focus:border-brand"
                   value={formData.city}
                   onChange={(e) => setFormData({ ...formData, city: e.target.value })}
@@ -127,10 +136,22 @@ const Onboarding = () => {
           {step === 2 && (
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700">Branch / Specialization</label>
+                <label className="block text-sm font-medium text-gray-700">College</label>
                 <input
                   type="text"
                   required
+                  placeholder="College"
+                  className="mt-1 block w-full border-gray-300 rounded-lg focus:ring-brand focus:border-brand"
+                  value={formData.college}
+                  onChange={(e) => setFormData({ ...formData, college: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Branch</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Branch"
                   className="mt-1 block w-full border-gray-300 rounded-lg focus:ring-brand focus:border-brand"
                   value={formData.branch}
                   onChange={(e) => setFormData({ ...formData, branch: e.target.value })}
@@ -139,6 +160,7 @@ const Onboarding = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700">Current Year</label>
                 <select
+                  required
                   className="mt-1 block w-full border-gray-300 rounded-lg focus:ring-brand focus:border-brand"
                   value={formData.year}
                   onChange={(e) => setFormData({ ...formData, year: e.target.value })}

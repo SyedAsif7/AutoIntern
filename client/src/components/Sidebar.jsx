@@ -1,4 +1,4 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
   BookOpen, 
@@ -9,10 +9,22 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      toast.success('Logged out successfully');
+      navigate('/');
+    } catch (error) {
+      toast.error('Failed to log out');
+    }
+  };
 
   const menuItems = [
     { name: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
@@ -57,11 +69,13 @@ const Sidebar = () => {
 
         <div className="p-4 border-t border-gray-100">
           <button 
-            onClick={logout}
-            className="flex items-center w-full px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all"
+            onClick={handleLogout}
+            className="flex items-center w-full px-4 py-3 text-gray-600 hover:bg-red-50 hover:text-red-600 rounded-xl transition-all font-bold group"
           >
-            <LogOut className="h-5 w-5 mr-3" />
-            <span className="font-medium">Logout</span>
+            <div className="w-10 h-10 bg-gray-50 group-hover:bg-red-100 rounded-xl flex items-center justify-center mr-3 transition-colors">
+              <LogOut className="h-5 w-5 text-gray-400 group-hover:text-red-600" />
+            </div>
+            <span className="font-bold">Logout</span>
           </button>
         </div>
       </div>
@@ -82,7 +96,7 @@ const Sidebar = () => {
             </Link>
           );
         })}
-        <button onClick={logout} className="flex flex-col items-center text-gray-400">
+        <button onClick={handleLogout} className="flex flex-col items-center text-gray-400 hover:text-red-600 transition-colors">
           <LogOut className="h-6 w-6" />
           <span className="text-[10px] mt-1 font-medium">Logout</span>
         </button>
