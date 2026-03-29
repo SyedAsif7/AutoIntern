@@ -82,6 +82,39 @@ const Dashboard = () => {
   const [showNotes, setShowNotes] = useState(false);
   const [showReferral, setShowReferral] = useState(false);
   const [referralText, setReferralText] = useState('');
+  const [enrolledCourses, setEnrolledCourses] = useState([]);
+
+  // Check if welcome card should be shown
+  const isSyedAsif = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com';
+  
+  useEffect(() => {
+    if (currentUser && !isSyedAsif) {
+      const enrollmentKey = `enrollments_${currentUser.uid}`;
+      const savedEnrollments = JSON.parse(localStorage.getItem(enrollmentKey) || '[]');
+      setEnrolledCourses(savedEnrollments);
+    }
+  }, [currentUser, isSyedAsif]);
+  const welcomeKey = isSyedAsif ? 'dismissedWelcome' : `dismissedWelcome_${currentUser?.uid}`;
+  const profileKey = isSyedAsif ? 'profileData' : `profileData_${currentUser?.uid}`;
+  
+  const [showWelcome, setShowWelcome] = useState(() => {
+    if (isSyedAsif) return false;
+    const isDismissed = localStorage.getItem(welcomeKey) === 'true';
+    const hasProfile = localStorage.getItem(profileKey);
+    // Hide if dismissed OR if they have already filled profile data (beyond the default "New User" state)
+    if (isDismissed) return false;
+    if (hasProfile) {
+      const data = JSON.parse(hasProfile);
+      // If they have more than just a name/email, they've likely completed onboarding
+      return !data.college || data.college === 'Not Specified';
+    }
+    return true;
+  });
+
+  const dismissWelcome = () => {
+    localStorage.setItem(welcomeKey, 'true');
+    setShowWelcome(false);
+  };
 
   // Update name if currentUser or localStorage changes
   useEffect(() => {
@@ -95,8 +128,6 @@ const Dashboard = () => {
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
   }, [currentUser]);
-  
-  const isSyedAsif = currentUser?.email === 'syedgaffarsyedrajjak1@gmail.com';
 
   // Gamification State
   const [xp, setXp] = useState(isSyedAsif ? 2450 : 0);
@@ -106,9 +137,9 @@ const Dashboard = () => {
 
   // Update stats based on user
    const stats = [
-     { label: 'Courses Enrolled', value: isSyedAsif ? '3' : '0', icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50', path: '/courses' },
+     { label: 'Courses Enrolled', value: isSyedAsif ? '3' : enrolledCourses.length.toString(), icon: BookOpen, color: 'text-indigo-600', bg: 'bg-indigo-50', path: '/courses' },
      { label: 'Current Streak', value: isSyedAsif ? '5 Days' : '0 Days', icon: Flame, color: 'text-orange-600', bg: 'bg-orange-50', path: '/dashboard' },
-     { label: 'Internships Saved', value: isSyedAsif ? '12' : '0', icon: Bookmark, color: 'text-blue-600', bg: 'bg-blue-50', path: '/internships' },
+     { label: 'Interview Score', value: isSyedAsif ? '8.5/10' : 'N/A', icon: Target, color: 'text-blue-600', bg: 'bg-blue-50', path: '/prep' },
      { label: 'Profile Completion', value: isSyedAsif ? '85%' : '20%', icon: UserCheck, color: 'text-emerald-600', bg: 'bg-emerald-50', path: '/profile' },
    ];
 
@@ -361,31 +392,54 @@ const Dashboard = () => {
               </section>
             )}
 
-            {!isSyedAsif && (
-              <section id="welcome-new-user">
-                <div className="bg-gradient-to-br from-brand/10 via-white to-brand/5 p-8 rounded-3xl border border-brand/20 shadow-xl shadow-brand/5 transition-all duration-500">
-                  <div className="flex flex-col md:flex-row items-center gap-8">
-                    <div className="w-24 h-24 bg-brand rounded-2xl flex items-center justify-center shadow-lg">
-                      <Sparkles className="h-12 w-12 text-white" />
-                    </div>
-                    <div className="flex-1 text-center md:text-left">
-                      <h2 className="text-3xl font-black text-gray-900 mb-2">Welcome to Your Career Journey!</h2>
-                      <p className="text-lg text-gray-600 font-medium mb-6">
-                        You're just a few steps away from landing your dream internship. Start by completing your profile or browsing our courses.
-                      </p>
-                      <div className="flex flex-wrap gap-4 justify-center md:justify-start">
-                        <Link to="/profile" className="px-8 py-3 bg-brand text-white font-black rounded-xl shadow-lg hover:shadow-xl transition-all">
-                          Complete Profile
-                        </Link>
-                        <Link to="/courses" className="px-8 py-3 bg-white border-2 border-brand/20 text-brand font-black rounded-xl hover:bg-brand/5 transition-all">
-                          Browse Courses
-                        </Link>
+            <AnimatePresence>
+              {showWelcome && (
+                <motion.section 
+                  id="welcome-new-user"
+                  initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                  animate={{ opacity: 1, height: 'auto', marginBottom: 32 }}
+                  exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                  transition={{ duration: 0.4 }}
+                >
+                  <div className="bg-gradient-to-br from-brand/10 via-white to-brand/5 p-8 rounded-3xl border border-brand/20 shadow-xl shadow-brand/5 transition-all duration-500 relative group/welcome">
+                    <button 
+                      onClick={dismissWelcome}
+                      className="absolute top-4 right-4 p-2 bg-white/50 text-gray-400 hover:text-gray-600 rounded-xl opacity-0 group-hover/welcome:opacity-100 transition-all"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                    
+                    <div className="flex flex-col md:flex-row items-center gap-8">
+                      <div className="w-24 h-24 bg-brand rounded-2xl flex items-center justify-center shadow-lg">
+                        <Sparkles className="h-12 w-12 text-white" />
+                      </div>
+                      <div className="flex-1 text-center md:text-left">
+                        <h2 className="text-3xl font-black text-gray-900 mb-2">Welcome to Your Career Journey!</h2>
+                        <p className="text-lg text-gray-600 font-medium mb-6">
+                          You're just a few steps away from landing your dream internship. Start by completing your profile or browsing our courses.
+                        </p>
+                        <div className="flex flex-wrap gap-4 justify-center md:justify-start">
+                          <Link 
+                            to="/profile" 
+                            onClick={dismissWelcome}
+                            className="px-8 py-3 bg-brand text-white font-black rounded-xl shadow-lg hover:shadow-xl transition-all"
+                          >
+                            Complete Profile
+                          </Link>
+                          <Link 
+                            to="/courses" 
+                            onClick={dismissWelcome}
+                            className="px-8 py-3 bg-white border-2 border-brand/20 text-brand font-black rounded-xl hover:bg-brand/5 transition-all"
+                          >
+                            Browse Courses
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </section>
-            )}
+                </motion.section>
+              )}
+            </AnimatePresence>
 
             {/* Continue Learning - Ongoing Courses */}
             {isSyedAsif ? (
@@ -457,6 +511,53 @@ const Dashboard = () => {
                   </div>
                 </div>
               </section>
+            ) : enrolledCourses.length > 0 ? (
+              <section>
+                <div className="flex items-center justify-between mb-5">
+                  <h2 className="text-2xl font-black text-gray-900 flex items-center gap-2">
+                    <BookOpen className="h-6 w-6 text-brand" /> My Courses
+                  </h2>
+                  <Link to="/courses">
+                    <button className="group px-5 py-2.5 bg-white border-2 border-indigo-100 text-brand text-sm font-bold rounded-xl hover:bg-indigo-50 transition-all flex items-center gap-2">
+                      Browse More <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </button>
+                  </Link>
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-6">
+                  {enrolledCourses.map((enrollment, idx) => (
+                    <div key={idx} className="bg-white p-6 rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/40 hover:shadow-2xl transition-all duration-300 group">
+                      <div className="flex items-start gap-4 mb-4">
+                        <div className="w-14 h-14 bg-brand rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg group-hover:rotate-3 transition-transform overflow-hidden">
+                          {enrollment.thumbnail ? (
+                            <img src={enrollment.thumbnail} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <Target className="h-7 w-7 text-white" />
+                          )}
+                        </div>
+                        <div>
+                          <h3 className="font-black text-gray-900 leading-tight">{enrollment.title}</h3>
+                          <p className="text-xs text-gray-500 font-bold mt-1 uppercase tracking-wider">{enrollment.domain}</p>
+                        </div>
+                      </div>
+                      <div className="mb-4">
+                        <div className="flex justify-between text-[10px] font-black text-gray-600 mb-2">
+                          <span>Course Progress</span>
+                          <span className="text-brand">{enrollment.progress}%</span>
+                        </div>
+                        <div className="w-full bg-gray-100 h-2 rounded-full overflow-hidden">
+                          <div className="bg-brand h-full transition-all duration-500" style={{ width: `${enrollment.progress}%` }} />
+                        </div>
+                      </div>
+                      <Link to={`/learning/${enrollment.slug}`}>
+                        <button className="w-full py-3 bg-gray-50 text-gray-700 text-xs font-black rounded-xl hover:bg-brand hover:text-white transition-all duration-300">
+                          {enrollment.progress > 0 ? 'Resume Module' : 'Start Course'}
+                        </button>
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              </section>
             ) : (
               <section>
                 <div className="flex items-center justify-between mb-5">
@@ -491,45 +592,6 @@ const Dashboard = () => {
                 </div>
               </section>
             )}
-
-            {/* Recommended Next Step */}
-            <section>
-              <h2 className="text-2xl font-black text-gray-900 mb-5 flex items-center gap-2">
-                <Target className="h-6 w-6 text-brand" /> Career Accelerator
-              </h2>
-              <div className="bg-gradient-to-br from-white via-indigo-50/20 to-white p-8 rounded-3xl border border-indigo-100 shadow-xl shadow-indigo-100/30 hover:shadow-2xl transition-all duration-500">
-                <div className="flex items-start gap-5">
-                  <div className="w-16 h-16 bg-gradient-to-br from-brand to-brand-dark text-white rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                    <Briefcase className="h-8 w-8" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-xl font-black text-gray-900 mb-2">Resume Review: Backend Developer</h3>
-                    <p className="text-sm text-gray-600 font-medium mb-5 flex items-center gap-2">
-                      <span className="inline-flex items-center gap-1 px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold">
-                        10 min
-                      </span>
-                      AI-Powered Career Prep
-                    </p>
-                    <div className="flex flex-wrap gap-3">
-                      <Link to="/prep">
-                        <button className="group flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-brand to-brand-dark text-white text-sm font-bold rounded-xl shadow-lg shadow-indigo-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300">
-                          <ExternalLink className="h-4 w-4 group-hover:scale-110 transition-transform" /> Start Review
-                        </button>
-                      </Link>
-                      <button 
-                        onClick={() => {
-                          setReferralText("Hi [Name], I'm a Full Stack Developer graduated from AutoIntern. I saw your recent post about the Backend role at [Company] and would love to connect. My portfolio is verified by AI with 98% match. Would you be open to a quick referral?");
-                          setShowReferral(true);
-                        }}
-                        className="group flex items-center gap-2 px-5 py-2.5 bg-white border-2 border-indigo-100 text-brand text-sm font-bold rounded-xl hover:bg-indigo-50 transition-all duration-300"
-                      >
-                        <Send className="h-4 w-4 group-hover:translate-x-1 transition-transform" /> AI Referral Gen
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </section>
 
             {/* Review Materials & Preparation */}
             <section>
@@ -737,67 +799,37 @@ const Dashboard = () => {
             <section className="animate-in fade-in slide-in-from-right duration-700 delay-300">
               <div className="flex items-center justify-between mb-5">
                 <h2 className="text-xl font-black text-gray-900 flex items-center gap-2">
-                  <TrendingUp className="h-5 w-5 text-emerald-500" /> Market Pulse
+                  <TrendingUp className="h-5 w-5 text-emerald-500" /> Live Market Pulse
                 </h2>
                 <span className="flex items-center gap-1.5 px-2 py-1 bg-emerald-50 text-emerald-600 text-[10px] font-black rounded-lg animate-pulse">
-                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> LIVE
+                  <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full" /> LIVE FEED
                 </span>
               </div>
               <div className="bg-slate-900 p-6 rounded-3xl shadow-2xl border border-slate-800 relative overflow-hidden group">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl" />
-                <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-4">Trending in Backend Dev</p>
-                
                 <div className="space-y-4">
                   {[
-                    { name: 'gRPC & Protobuf', trend: '+42%', color: 'text-emerald-400' },
-                    { name: 'Kubernetes', trend: '+28%', color: 'text-blue-400' },
-                    { name: 'Redis Caching', trend: '+15%', color: 'text-rose-400' }
+                    { name: 'Node.js Performance', type: 'ARTICLE', trend: 'Trending', color: 'text-emerald-400' },
+                    { name: 'Senior React Developer', type: 'NEW JOB', trend: '2m ago', color: 'text-blue-400' },
+                    { name: 'System Design Interview', type: 'RESOURCE', trend: 'Hot', color: 'text-rose-400' }
                   ].map((tech, i) => (
-                    <div key={i} className="flex items-center justify-between group/item">
-                      <span className="text-sm font-bold text-slate-300 group-hover/item:text-white transition-colors">{tech.name}</span>
-                      <span className={`text-xs font-black ${tech.color} bg-white/5 px-2 py-1 rounded-lg`}>{tech.trend}</span>
+                    <div key={i} className="flex items-center justify-between group/item border-b border-white/5 pb-3 last:border-0 last:pb-0">
+                      <div>
+                        <p className="text-[8px] font-black text-slate-500 uppercase tracking-widest">{tech.type}</p>
+                        <span className="text-sm font-bold text-slate-300 group-hover/item:text-white transition-colors">{tech.name}</span>
+                      </div>
+                      <span className={`text-[10px] font-black ${tech.color} bg-white/5 px-2 py-1 rounded-lg`}>{tech.trend}</span>
                     </div>
                   ))}
                 </div>
                 
-                <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
-                  <p className="text-[10px] text-slate-400 font-medium">Updated 5m ago</p>
-                  <button className="text-[10px] font-black text-emerald-400 hover:text-emerald-300 uppercase tracking-wider transition-colors">Analyze Trends</button>
-                </div>
+                <button className="w-full mt-6 py-3 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white text-[10px] font-black uppercase tracking-widest rounded-xl transition-all border border-white/5">
+                  View Full Market Report
+                </button>
               </div>
             </section>
 
-            {/* WIN FACTOR 2: Daily Role Challenge */}
-            <section className="animate-in fade-in slide-in-from-right duration-700 delay-500">
-              <h2 className="text-xl font-black text-gray-900 mb-5 flex items-center gap-2">
-                <Zap className="h-5 w-5 text-amber-500" /> Daily Micro-Task
-              </h2>
-              <div className="bg-white p-6 rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/50 relative group">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-amber-50 rounded-xl flex items-center justify-center">
-                    <Terminal className="h-5 w-5 text-amber-600" />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-black text-gray-900">The "Zombie" Process</h3>
-                    <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Backend Debugging</p>
-                  </div>
-                </div>
-                <p className="text-xs text-gray-600 leading-relaxed mb-5">
-                  A Node.js process is consuming 100% CPU but not responding. What's the first command you'd use to debug?
-                </p>
-                <div className="grid grid-cols-2 gap-2 mb-4">
-                  {['top', 'lsof -i', 'pm2 list', 'strace'].map((cmd) => (
-                    <button key={cmd} className="py-2 px-3 bg-gray-50 hover:bg-amber-500 hover:text-white text-gray-600 text-[10px] font-black rounded-lg border border-gray-100 transition-all">
-                      {cmd}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex items-center justify-between text-[10px] font-bold">
-                  <span className="text-emerald-600">+50 XP Reward</span>
-                  <span className="text-gray-400">1,240 students solved</span>
-                </div>
-              </div>
-            </section>
+
 
             {/* Matched Internships */}
             <section>
@@ -811,25 +843,25 @@ const Dashboard = () => {
                   </button>
                 </Link>
               </div>
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {matchedInternships.map((intern, i) => (
-                  <div key={i} className="group bg-white p-6 rounded-2xl border border-gray-100 shadow-lg shadow-gray-100/50 hover:shadow-xl hover:shadow-indigo-100/50 hover:-translate-y-1 transition-all duration-300">
+                  <div key={i} className="group bg-white p-5 rounded-2xl border border-gray-100 shadow-lg shadow-gray-100/50 hover:shadow-xl hover:shadow-indigo-100/50 hover:-translate-y-1 transition-all duration-300">
                     <div className="flex justify-between items-start mb-3">
-                      <span className="px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-green-500 text-white text-[10px] font-black rounded-xl uppercase tracking-wider shadow-lg shadow-emerald-200">
+                      <span className="px-2.5 py-1 bg-gradient-to-r from-emerald-500 to-green-500 text-white text-[9px] font-black rounded-lg uppercase tracking-wider shadow-md shadow-emerald-200">
                         {intern.match} Match
                       </span>
-                      <span className="text-xs font-bold text-gray-500 bg-gray-50 px-2.5 py-1.5 rounded-lg">{intern.location}</span>
+                      <span className="text-[10px] font-bold text-gray-500 bg-gray-50 px-2 py-1 rounded-md">{intern.location}</span>
                     </div>
-                    <h3 className="font-black text-gray-900 leading-tight mb-2 group-hover:text-brand transition-colors">{intern.title}</h3>
-                    <p className="text-sm text-gray-600 font-medium mb-4">{intern.company}</p>
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-50">
+                    <h3 className="font-black text-gray-800 text-sm leading-tight mb-1 group-hover:text-brand transition-colors line-clamp-1">{intern.title}</h3>
+                    <p className="text-xs text-gray-500 font-bold mb-3 line-clamp-1">{intern.company}</p>
+                    <div className="flex items-center justify-between pt-3 border-t border-gray-50">
                       <div>
-                        <p className="text-xs text-gray-500 font-medium mb-0.5">Stipend</p>
-                        <span className="text-lg font-black text-brand">{intern.stipend}</span>
+                        <p className="text-[9px] text-gray-400 font-bold uppercase mb-0.5 tracking-tight">Stipend</p>
+                        <span className="text-base font-black text-brand">{intern.stipend}</span>
                       </div>
                       <Link to={`/internships/${intern.title.toLowerCase().replace(/\s+/g, '-')}`}>
-                        <button className="p-3 bg-gradient-to-r from-brand to-brand-dark text-white rounded-xl shadow-lg shadow-indigo-200 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group/btn">
-                          <ArrowRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
+                        <button className="p-2 bg-gradient-to-r from-brand to-brand-dark text-white rounded-lg shadow-lg shadow-indigo-100 hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group/btn">
+                          <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
                         </button>
                       </Link>
                     </div>

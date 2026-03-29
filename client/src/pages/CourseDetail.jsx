@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
+import { useAuth } from '../context/AuthContext';
 import { 
   BookOpen, 
   Clock, 
@@ -19,11 +20,21 @@ import toast from 'react-hot-toast';
 const CourseDetail = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
   const [course, setCourse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(false);
+  const [isEnrolled, setIsEnrolled] = useState(false);
 
   useEffect(() => {
+    // Check if user is already enrolled
+    if (currentUser) {
+      const enrollmentKey = `enrollments_${currentUser.uid}`;
+      const enrollments = JSON.parse(localStorage.getItem(enrollmentKey) || '[]');
+      if (enrollments.some(e => e.slug === slug)) {
+        setIsEnrolled(true);
+      }
+    }
     // Detailed Course Data Map
     const courseData = {
       'c-lang': {
@@ -44,25 +55,25 @@ const CourseDetail = () => {
         ],
         outcomes: ["Understand low-level memory management", "Build robust command-line applications", "Strong foundation for C++ and Java", "Verified C Certification"]
       },
-      'python-lang': {
-        title: "Python for Data Science",
+      'cpp-lang': {
+        title: "C++ Object-Oriented Programming",
         domain: "Programming",
         duration: 6,
-        level: "Beginner",
-        industryRole: "Data Analyst / ML Engineer / Automation Specialist",
-        description: "The most popular language for AI and Data Science. Start from zero and build real-world automation scripts and data models.",
-        thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
-        enrolled: 3500,
-        rating: 4.9,
+        level: "Intermediate",
+        industryRole: "Game Developer / Application Engineer / Performance Specialist",
+        description: "Deep dive into C++ and its OOP features. Master classes, templates, and the STL to create scalable and efficient software solutions.",
+        thumbnail: 'https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?auto=format&fit=crop&w=800&q=80',
+        enrolled: 950,
+        rating: 4.8,
         modules: [
-          { weekNumber: 1, title: "Python Fundamentals", lessons: [{ title: "Syntax & Variables", duration: "15 min" }, { title: "Lists, Tuples, Dicts", duration: "25 min" }], quiz: true, assignment: true },
-          { weekNumber: 2, title: "Functional Programming", lessons: [{ title: "Lambda Functions", duration: "20 min" }, { title: "List Comprehensions", duration: "20 min" }], quiz: true, assignment: true },
-          { weekNumber: 3, title: "OOP in Python", lessons: [{ title: "Classes & Inheritance", duration: "35 min" }, { title: "Decorators", duration: "25 min" }], quiz: true, assignment: true },
-          { weekNumber: 4, title: "Data Handling", lessons: [{ title: "Pandas Basics", duration: "45 min" }, { title: "NumPy Arrays", duration: "30 min" }], quiz: true, assignment: true },
-          { weekNumber: 5, title: "Visualization", lessons: [{ title: "Matplotlib & Seaborn", duration: "40 min" }], quiz: true, assignment: true },
-          { weekNumber: 6, title: "Final Project", lessons: [{ title: "Building a Data Dashboard", duration: "60 min" }], quiz: true, assignment: true }
+          { weekNumber: 1, title: "C++ vs C & Basics", lessons: [{ title: "Input/Output in C++", duration: "15 min" }, { title: "Namespaces & Strings", duration: "20 min" }], quiz: true, assignment: true },
+          { weekNumber: 2, title: "OOP Foundations", lessons: [{ title: "Classes & Objects", duration: "30 min" }, { title: "Constructors & Destructors", duration: "25 min" }], quiz: true, assignment: true },
+          { weekNumber: 3, title: "Inheritance & Polymorphism", lessons: [{ title: "Virtual Functions", duration: "35 min" }, { title: "Operator Overloading", duration: "30 min" }], quiz: true, assignment: true },
+          { weekNumber: 4, title: "Advanced Templates", lessons: [{ title: "Function & Class Templates", duration: "40 min" }], quiz: true, assignment: true },
+          { weekNumber: 5, title: "STL Mastery", lessons: [{ title: "Vectors, Lists & Maps", duration: "45 min" }, { title: "Iterators & Algorithms", duration: "30 min" }], quiz: true, assignment: true },
+          { weekNumber: 6, title: "Modern C++ (C++11/14/17)", lessons: [{ title: "Smart Pointers", duration: "35 min" }, { title: "Lambda Expressions", duration: "25 min" }], quiz: true, assignment: true }
         ],
-        outcomes: ["Automate repetitive tasks with Python", "Analyze large datasets using Pandas", "Build basic Machine Learning models", "Verified Python Certification"]
+        outcomes: ["Expertise in Object-Oriented Design", "Efficient use of Standard Template Library", "Modern C++ development practices", "Verified C++ Certification"]
       },
       'java-lang': {
         title: "Java Backend Development",
@@ -86,43 +97,63 @@ const CourseDetail = () => {
         ],
         outcomes: ["Master Object-Oriented Programming", "Build multi-threaded applications", "Create REST APIs with Spring Boot", "Verified Java Certification"]
       },
-      'autocad-civil': {
-        title: "AutoCAD & Revit for Civil Engineers",
-        domain: "Civil",
+      'python-lang': {
+        title: "Python for Data Science",
+        domain: "Programming",
+        duration: 6,
+        level: "Beginner",
+        industryRole: "Data Analyst / ML Engineer / Automation Specialist",
+        description: "The most popular language for AI and Data Science. Start from zero and build real-world automation scripts and data models.",
+        thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
+        enrolled: 3500,
+        rating: 4.9,
+        modules: [
+          { weekNumber: 1, title: "Python Fundamentals", lessons: [{ title: "Syntax & Variables", duration: "15 min" }, { title: "Lists, Tuples, Dicts", duration: "25 min" }], quiz: true, assignment: true },
+          { weekNumber: 2, title: "Functional Programming", lessons: [{ title: "Lambda Functions", duration: "20 min" }, { title: "List Comprehensions", duration: "20 min" }], quiz: true, assignment: true },
+          { weekNumber: 3, title: "OOP in Python", lessons: [{ title: "Classes & Inheritance", duration: "35 min" }, { title: "Decorators", duration: "25 min" }], quiz: true, assignment: true },
+          { weekNumber: 4, title: "Data Handling", lessons: [{ title: "Pandas Basics", duration: "45 min" }, { title: "NumPy Arrays", duration: "30 min" }], quiz: true, assignment: true },
+          { weekNumber: 5, title: "Visualization", lessons: [{ title: "Matplotlib & Seaborn", duration: "40 min" }], quiz: true, assignment: true },
+          { weekNumber: 6, title: "Final Project", lessons: [{ title: "Building a Data Dashboard", duration: "60 min" }], quiz: true, assignment: true }
+        ],
+        outcomes: ["Automate repetitive tasks with Python", "Analyze large datasets using Pandas", "Build basic Machine Learning models", "Verified Python Certification"]
+      },
+      'javascript-lang': {
+        title: "JavaScript Foundations",
+        domain: "Programming",
+        duration: 6,
+        level: "Beginner",
+        industryRole: "Frontend Developer / Web App Specialist",
+        description: "Master the language of the web. Learn core JS, DOM manipulation, and modern ES6+ features to build interactive websites.",
+        thumbnail: 'https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?auto=format&fit=crop&w=800&q=80',
+        enrolled: 2800,
+        rating: 4.8,
+        modules: [
+          { weekNumber: 1, title: "JS Basics", lessons: [{ title: "Variables & Data Types", duration: "20 min" }, { title: "Functions & Scope", duration: "25 min" }], quiz: true, assignment: true },
+          { weekNumber: 2, title: "DOM Manipulation", lessons: [{ title: "Selecting Elements", duration: "30 min" }, { title: "Event Listeners", duration: "35 min" }], quiz: true, assignment: true },
+          { weekNumber: 3, title: "Asynchronous JS", lessons: [{ title: "Promises & Async/Await", duration: "40 min" }, { title: "Fetch API", duration: "30 min" }], quiz: true, assignment: true },
+          { weekNumber: 4, title: "ES6+ Features", lessons: [{ title: "Destructuring & Spread", duration: "20 min" }, { title: "Arrow Functions", duration: "15 min" }], quiz: true, assignment: true },
+          { weekNumber: 5, title: "Web Storage", lessons: [{ title: "LocalStorage & Cookies", duration: "25 min" }], quiz: true, assignment: true },
+          { weekNumber: 6, title: "Project: Interactive Portfolio", lessons: [{ title: "Building from Scratch", duration: "60 min" }], quiz: true, assignment: true }
+        ],
+        outcomes: ["Build interactive web interfaces", "Master Asynchronous programming", "Understand DOM and Browser APIs", "Verified JS Certification"]
+      },
+      'sql-lang': {
+        title: "SQL Database Mastery",
+        domain: "Database",
         duration: 4,
         level: "Beginner",
-        industryRole: "Draftsman / Site Engineer / BIM Modeler",
-        description: "Essential design tools for Civil Engineering. Learn 2D drafting, site planning, and 3D building modeling.",
-        thumbnail: 'https://images.unsplash.com/photo-1503387762-592dee58c460?auto=format&fit=crop&w=800&q=80',
-        enrolled: 420,
+        industryRole: "Database Administrator / Data Engineer / Analyst",
+        description: "Learn to design, manage, and query relational databases. Master SQL syntax and database normalization techniques.",
+        thumbnail: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=800&q=80',
+        enrolled: 1800,
         rating: 4.7,
         modules: [
-          { weekNumber: 1, title: "AutoCAD 2D Drafting", lessons: [{ title: "Draw & Modify Tools", duration: "40 min" }, { title: "Layers & Annotation", duration: "30 min" }], quiz: true, assignment: true },
-          { weekNumber: 2, title: "Civil Plan Design", lessons: [{ title: "Floor Plans & Sections", duration: "50 min" }, { title: "Site Layouts", duration: "45 min" }], quiz: true, assignment: true },
-          { weekNumber: 3, title: "Revit 3D Modeling", lessons: [{ title: "Walls, Doors & Windows", duration: "45 min" }, { title: "Roof & Floor Design", duration: "40 min" }], quiz: true, assignment: true },
-          { weekNumber: 4, title: "Rendering & Walkthrough", lessons: [{ title: "Material Mapping", duration: "35 min" }, { title: "Final Project Presentation", duration: "60 min" }], quiz: true, assignment: true }
+          { weekNumber: 1, title: "Intro to RDBMS", lessons: [{ title: "Database Concepts", duration: "20 min" }, { title: "Basic SELECT Queries", duration: "25 min" }], quiz: true, assignment: true },
+          { weekNumber: 2, title: "Filtering & Joins", lessons: [{ title: "WHERE & ORDER BY", duration: "30 min" }, { title: "INNER/LEFT/RIGHT Joins", duration: "45 min" }], quiz: true, assignment: true },
+          { weekNumber: 3, title: "Aggregations", lessons: [{ title: "GROUP BY & HAVING", duration: "35 min" }, { title: "Subqueries", duration: "40 min" }], quiz: true, assignment: true },
+          { weekNumber: 4, title: "DB Design", lessons: [{ title: "Normalization (1NF-3NF)", duration: "45 min" }, { title: "Indexing & Performance", duration: "30 min" }], quiz: true, assignment: true }
         ],
-        outcomes: ["Professional 2D Civil Drafting", "3D Building Information Modeling (BIM)", "Create high-quality renders", "Verified AutoCAD Certification"]
-      },
-      'solidworks-mech': {
-        title: "SolidWorks Masterclass",
-        domain: "Mech",
-        duration: 6,
-        level: "Intermediate",
-        industryRole: "Design Engineer / R&D Specialist / Production Planner",
-        description: "Industry-standard 3D CAD software. Design complex mechanical parts, assemblies, and perform simulations.",
-        thumbnail: 'https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?auto=format&fit=crop&w=800&q=80',
-        enrolled: 580,
-        rating: 4.6,
-        modules: [
-          { weekNumber: 1, title: "Sketching Basics", lessons: [{ title: "Geometric Relations", duration: "30 min" }, { title: "Dimensions & Constraints", duration: "25 min" }], quiz: true, assignment: true },
-          { weekNumber: 2, title: "Part Modeling I", lessons: [{ title: "Extrude & Revolve", duration: "40 min" }, { title: "Sweeps & Lofts", duration: "45 min" }], quiz: true, assignment: true },
-          { weekNumber: 3, title: "Part Modeling II", lessons: [{ title: "Fillets, Chamfers & Shell", duration: "30 min" }, { title: "Patterning", duration: "25 min" }], quiz: true, assignment: true },
-          { weekNumber: 4, title: "Assembly Design", lessons: [{ title: "Mates & Constraints", duration: "50 min" }, { title: "Exploded Views", duration: "35 min" }], quiz: true, assignment: true },
-          { weekNumber: 5, title: "Engineering Drawings", lessons: [{ title: "BOM & Annotations", duration: "40 min" }], quiz: true, assignment: true },
-          { weekNumber: 6, title: "Simulation Intro", lessons: [{ title: "Static Stress Analysis", duration: "55 min" }], quiz: true, assignment: true }
-        ],
-        outcomes: ["Design complex 3D mechanical parts", "Build multi-component assemblies", "Perform basic FEA simulations", "Verified SolidWorks Certification"]
+        outcomes: ["Query complex relational data", "Design efficient database schemas", "Optimize query performance", "Verified SQL Certification"]
       },
       'full-stack-web-dev': {
         title: "Full Stack Web Development",
@@ -165,6 +196,44 @@ const CourseDetail = () => {
           { weekNumber: 6, title: "Smart Home Project", lessons: [{ title: "Building a Connected Device", duration: "90 min" }], quiz: true, assignment: true }
         ],
         outcomes: ["Design smart hardware systems", "Program embedded microcontrollers", "Connect devices to the cloud", "Verified IoT Certification"]
+      },
+      'autocad-civil': {
+        title: "AutoCAD & Revit for Civil Engineers",
+        domain: "Civil",
+        duration: 4,
+        level: "Beginner",
+        industryRole: "Draftsman / Site Engineer / BIM Modeler",
+        description: "Essential design tools for Civil Engineering. Learn 2D drafting, site planning, and 3D building modeling.",
+        thumbnail: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80',
+        enrolled: 420,
+        rating: 4.7,
+        modules: [
+          { weekNumber: 1, title: "AutoCAD 2D Drafting", lessons: [{ title: "Draw & Modify Tools", duration: "40 min" }, { title: "Layers & Annotation", duration: "30 min" }], quiz: true, assignment: true },
+          { weekNumber: 2, title: "Civil Plan Design", lessons: [{ title: "Floor Plans & Sections", duration: "50 min" }, { title: "Site Layouts", duration: "45 min" }], quiz: true, assignment: true },
+          { weekNumber: 3, title: "Revit 3D Modeling", lessons: [{ title: "Walls, Doors & Windows", duration: "45 min" }, { title: "Roof & Floor Design", duration: "40 min" }], quiz: true, assignment: true },
+          { weekNumber: 4, title: "Rendering & Walkthrough", lessons: [{ title: "Material Mapping", duration: "35 min" }, { title: "Final Project Presentation", duration: "60 min" }], quiz: true, assignment: true }
+        ],
+        outcomes: ["Professional 2D Civil Drafting", "3D Building Information Modeling (BIM)", "Create high-quality renders", "Verified AutoCAD Certification"]
+      },
+      'solidworks-mech': {
+        title: "SolidWorks Masterclass",
+        domain: "Mech",
+        duration: 6,
+        level: "Intermediate",
+        industryRole: "Design Engineer / R&D Specialist / Production Planner",
+        description: "Industry-standard 3D CAD software. Design complex mechanical parts, assemblies, and perform simulations.",
+        thumbnail: 'https://images.unsplash.com/photo-1537462715879-360eeb61a0ad?auto=format&fit=crop&w=800&q=80',
+        enrolled: 580,
+        rating: 4.6,
+        modules: [
+          { weekNumber: 1, title: "Sketching Basics", lessons: [{ title: "Geometric Relations", duration: "30 min" }, { title: "Dimensions & Constraints", duration: "25 min" }], quiz: true, assignment: true },
+          { weekNumber: 2, title: "Part Modeling I", lessons: [{ title: "Extrude & Revolve", duration: "40 min" }, { title: "Sweeps & Lofts", duration: "45 min" }], quiz: true, assignment: true },
+          { weekNumber: 3, title: "Part Modeling II", lessons: [{ title: "Fillets, Chamfers & Shell", duration: "30 min" }, { title: "Patterning", duration: "25 min" }], quiz: true, assignment: true },
+          { weekNumber: 4, title: "Assembly Design", lessons: [{ title: "Mates & Constraints", duration: "50 min" }, { title: "Exploded Views", duration: "35 min" }], quiz: true, assignment: true },
+          { weekNumber: 5, title: "Engineering Drawings", lessons: [{ title: "BOM & Annotations", duration: "40 min" }], quiz: true, assignment: true },
+          { weekNumber: 6, title: "Simulation Intro", lessons: [{ title: "Static Stress Analysis", duration: "55 min" }], quiz: true, assignment: true }
+        ],
+        outcomes: ["Design complex 3D mechanical parts", "Build multi-component assemblies", "Perform basic FEA simulations", "Verified SolidWorks Certification"]
       }
     };
 
@@ -194,10 +263,37 @@ const CourseDetail = () => {
   }, [slug]);
 
   const handleEnroll = async () => {
+    if (!currentUser) {
+      toast.error('Please login to enroll in courses');
+      navigate('/login');
+      return;
+    }
+
+    if (isEnrolled) {
+      navigate(`/learning/${slug}`);
+      return;
+    }
+
     setEnrolling(true);
+    
     // Mock enrollment logic
     setTimeout(() => {
+      const enrollmentKey = `enrollments_${currentUser.uid}`;
+      const enrollments = JSON.parse(localStorage.getItem(enrollmentKey) || '[]');
+      
+      const newEnrollment = {
+        slug,
+        title: course.title,
+        enrolledAt: new Date().toISOString(),
+        progress: 0,
+        thumbnail: course.thumbnail,
+        domain: course.domain
+      };
+
+      localStorage.setItem(enrollmentKey, JSON.stringify([...enrollments, newEnrollment]));
+      
       toast.success('Successfully enrolled!');
+      setIsEnrolled(true);
       navigate('/dashboard');
       setEnrolling(false);
     }, 1500);
@@ -260,9 +356,15 @@ const CourseDetail = () => {
               <button 
                 onClick={handleEnroll}
                 disabled={enrolling}
-                className="w-full md:w-auto px-10 py-5 bg-brand text-white font-black rounded-2xl text-lg shadow-2xl shadow-indigo-200 hover:bg-brand-dark hover:-translate-y-1 transition-all flex items-center justify-center"
+                className="w-full md:w-auto px-10 py-5 bg-brand text-white font-black rounded-2xl text-lg shadow-2xl shadow-indigo-200 hover:bg-brand-dark hover:-translate-y-1 transition-all flex items-center justify-center gap-2 disabled:opacity-70"
               >
-                {enrolling ? 'Enrolling...' : 'Enroll Now'} <Zap className="h-5 w-5 ml-2 fill-white" />
+                {enrolling ? (
+                  'Enrolling...'
+                ) : isEnrolled ? (
+                  <>Go to Course <ArrowRight className="h-5 w-5" /></>
+                ) : (
+                  <>Enroll Now <Zap className="h-5 w-5 fill-white" /></>
+                )}
               </button>
             </div>
             

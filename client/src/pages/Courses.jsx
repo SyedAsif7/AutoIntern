@@ -19,37 +19,37 @@ const Courses = () => {
     setTimeout(() => {
       const mockCourses = [
         { 
-          id: 1, slug: 'c-lang', title: 'C', 
+          id: 1, slug: 'c-lang', title: 'C Programming', 
           domain: 'Programming', duration: 4, level: 'Beginner', 
           thumbnail: 'https://images.unsplash.com/photo-1516116216624-53e697fedbea?auto=format&fit=crop&w=800&q=80',
           enrolled: 1200, rating: 4.7
         },
         { 
-          id: 2, slug: 'cpp-lang', title: 'C++', 
+          id: 2, slug: 'cpp-lang', title: 'C++ Programming', 
           domain: 'Programming', duration: 6, level: 'Intermediate', 
-          thumbnail: 'https://images.unsplash.com/photo-1629739947391-74718288397a?auto=format&fit=crop&w=800&q=80',
+          thumbnail: 'https://images.unsplash.com/photo-1614741118887-7a4ee193a5fa?auto=format&fit=crop&w=800&q=80',
           enrolled: 950, rating: 4.8
         },
         { 
-          id: 3, slug: 'java-lang', title: 'Java', 
+          id: 3, slug: 'java-lang', title: 'Java Programming', 
           domain: 'Programming', duration: 8, level: 'Intermediate', 
           thumbnail: 'https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80',
           enrolled: 2100, rating: 4.9
         },
         { 
-          id: 4, slug: 'python-lang', title: 'Python', 
+          id: 4, slug: 'python-lang', title: 'Python Programming', 
           domain: 'Programming', duration: 6, level: 'Beginner', 
           thumbnail: 'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80',
           enrolled: 3500, rating: 4.9
         },
         { 
-          id: 5, slug: 'javascript-lang', title: 'JavaScript', 
+          id: 5, slug: 'javascript-lang', title: 'JavaScript Programming', 
           domain: 'Programming', duration: 6, level: 'Beginner', 
           thumbnail: 'https://images.unsplash.com/photo-1579468118864-1b9ea3c0db4a?auto=format&fit=crop&w=800&q=80',
           enrolled: 2800, rating: 4.8
         },
         { 
-          id: 6, slug: 'sql-lang', title: 'SQL', 
+          id: 6, slug: 'sql-lang', title: 'SQL Database', 
           domain: 'Database', duration: 4, level: 'Beginner', 
           thumbnail: 'https://images.unsplash.com/photo-1544383835-bda2bc66a55d?auto=format&fit=crop&w=800&q=80',
           enrolled: 1800, rating: 4.7
@@ -69,7 +69,7 @@ const Courses = () => {
         { 
           id: 9, slug: 'autocad-civil', title: 'AutoCAD & Revit for Civil', 
           domain: 'Civil', duration: 4, level: 'Beginner', 
-          thumbnail: 'https://images.unsplash.com/photo-1503387762-592dee58c460?auto=format&fit=crop&w=800&q=80',
+          thumbnail: 'https://images.unsplash.com/photo-1581094794329-c8112a89af12?auto=format&fit=crop&w=800&q=80',
           enrolled: 420, rating: 4.7
         },
         { 

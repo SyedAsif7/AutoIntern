@@ -6,7 +6,8 @@ import {
   signInWithEmailAndPassword as firebaseSignInWithEmailAndPassword,
   createUserWithEmailAndPassword as firebaseCreateUserWithEmailAndPassword,
   signOut as firebaseSignOut,
-  signInWithPopup as firebaseSignInWithPopup
+  signInWithPopup as firebaseSignInWithPopup,
+  sendPasswordResetEmail as firebaseSendPasswordResetEmail
 } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -28,6 +29,7 @@ export let signInWithEmailAndPassword;
 export let createUserWithEmailAndPassword;
 export let signOut;
 export let signInWithPopup;
+export let resetPassword;
 
 try {
   if (!firebaseConfig.apiKey || firebaseConfig.apiKey === 'YOUR_FIREBASE_API_KEY') {
@@ -43,6 +45,7 @@ try {
   createUserWithEmailAndPassword = (email, password) => firebaseCreateUserWithEmailAndPassword(auth, email, password);
   signOut = () => firebaseSignOut(auth);
   signInWithPopup = (provider) => firebaseSignInWithPopup(auth, provider);
+  resetPassword = (email) => firebaseSendPasswordResetEmail(auth, email);
 
 } catch (error) {
   console.error("Firebase Initialization Error:", error.message);
@@ -56,6 +59,7 @@ try {
   createUserWithEmailAndPassword = () => Promise.reject(new Error("Firebase not configured"));
   signOut = () => Promise.resolve();
   signInWithPopup = () => Promise.reject(new Error("Firebase not configured"));
+  resetPassword = () => Promise.reject(new Error("Firebase not configured"));
   
   auth = {};
   googleProvider = {};

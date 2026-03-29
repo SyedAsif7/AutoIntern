@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { LogIn, Mail, Lock, Chrome } from 'lucide-react';
+import toast from 'react-hot-toast';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login, loginWithGoogle } = useAuth();
+  const { login, loginWithGoogle, resetPassword } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -20,6 +21,22 @@ const Login = () => {
       navigate('/dashboard');
     } catch (err) {
       setError('Failed to log in. Please check your credentials.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    if (!email) {
+      setError('Please enter your email address first.');
+      return;
+    }
+    try {
+      setLoading(true);
+      await resetPassword(email);
+      toast.success('Password reset email sent! Please check your inbox.');
+    } catch (err) {
+      setError('Failed to send reset email. Please verify your email address.');
     } finally {
       setLoading(false);
     }
@@ -77,6 +94,16 @@ const Login = () => {
                 onChange={(e) => setPassword(e.target.value)}
               />
             </div>
+          </div>
+
+          <div className="flex items-center justify-end">
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              className="text-xs font-bold text-brand hover:text-brand-dark transition-colors"
+            >
+              Forgot Password?
+            </button>
           </div>
 
           <button

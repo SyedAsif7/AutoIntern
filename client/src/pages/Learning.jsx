@@ -34,12 +34,58 @@ const Learning = () => {
     }
   }, [searchParams]);
 
-  // Mock course data for learning
+  // Mock course data for learning (Matches CourseDetail.jsx slugs)
   const [course, setCourse] = useState(null);
 
   useEffect(() => {
-    setTimeout(() => {
-      setCourse({
+    const courseDataMap = {
+      'c-lang': {
+        title: "C Programming Mastery",
+        modules: [
+          {
+            weekNumber: 1,
+            title: "Basics & Data Types",
+            lessons: [
+              { title: "Variables & Operators", videoId: "bWPMSSsVdPk", duration: "20 min", completed: true },
+              { title: "Control Flow (If/Else, Loops)", videoId: "bWPMSSsVdPk", duration: "30 min", completed: true }
+            ],
+            quiz: {
+              questions: [
+                { q: "What is the size of int in C (typically)?", options: ["2 bytes", "4 bytes", "8 bytes", "Depends on compiler"], answer: "4 bytes" },
+                { q: "Which symbol is used for comments in C?", options: ["//", "#", "/* */", "Both // and /* */"], answer: "Both // and /* */" }
+              ]
+            }
+          },
+          {
+            weekNumber: 2,
+            title: "Arrays & Functions",
+            lessons: [
+              { title: "1D & 2D Arrays", videoId: "bWPMSSsVdPk", duration: "25 min", completed: false },
+              { title: "Function Scope & Recursion", videoId: "bWPMSSsVdPk", duration: "35 min", completed: false }
+            ],
+            quiz: { questions: [] }
+          }
+        ]
+      },
+      'python-lang': {
+        title: "Python for Data Science",
+        modules: [
+          {
+            weekNumber: 1,
+            title: "Python Fundamentals",
+            lessons: [
+              { title: "Syntax & Variables", videoId: "bWPMSSsVdPk", duration: "15 min", completed: true },
+              { title: "Lists, Tuples, Dicts", videoId: "bWPMSSsVdPk", duration: "25 min", completed: false }
+            ],
+            quiz: {
+              questions: [
+                { q: "Which data type is immutable in Python?", options: ["List", "Dictionary", "Tuple", "Set"], answer: "Tuple" }
+              ]
+            }
+          }
+        ]
+      },
+      'full-stack-web-dev': {
         title: "Full Stack Web Development",
         modules: [
           {
@@ -55,18 +101,112 @@ const Learning = () => {
                 { q: "Which CSS property is used to change text color?", options: ["font-color", "text-color", "color", "bgcolor"], answer: "color" }
               ]
             }
-          },
+          }
+        ]
+      },
+      'cpp-lang': {
+        title: "C++ Object-Oriented Programming",
+        modules: [
           {
-            weekNumber: 2,
-            title: "React Mastery",
+            weekNumber: 1,
+            title: "C++ Foundations",
             lessons: [
-              { title: "React Hooks & State", videoId: "bWPMSSsVdPk", duration: "30 min", completed: false },
-              { title: "Context API", videoId: "bWPMSSsVdPk", duration: "20 min", completed: false }
+              { title: "Classes & Objects", videoId: "bWPMSSsVdPk", duration: "30 min", completed: false },
+              { title: "Constructors & Destructors", videoId: "bWPMSSsVdPk", duration: "25 min", completed: false }
             ],
             quiz: { questions: [] }
           }
         ]
-      });
+      },
+      'java-lang': {
+        title: "Java Backend Development",
+        modules: [
+          {
+            weekNumber: 1,
+            title: "Java OOP Basics",
+            lessons: [
+              { title: "Inheritance & Interfaces", videoId: "bWPMSSsVdPk", duration: "40 min", completed: false },
+              { title: "Collections Framework", videoId: "bWPMSSsVdPk", duration: "45 min", completed: false }
+            ],
+            quiz: { questions: [] }
+          }
+        ]
+      },
+      'javascript-lang': {
+        title: "JavaScript Foundations",
+        modules: [
+          {
+            weekNumber: 1,
+            title: "JS Core Concepts",
+            lessons: [
+              { title: "Promises & Async/Await", videoId: "bWPMSSsVdPk", duration: "35 min", completed: false },
+              { title: "ES6+ Features", videoId: "bWPMSSsVdPk", duration: "30 min", completed: false }
+            ],
+            quiz: { questions: [] }
+          }
+        ]
+      },
+      'sql-lang': {
+        title: "SQL Database Mastery",
+        modules: [
+          {
+            weekNumber: 1,
+            title: "SQL Fundamentals",
+            lessons: [
+              { title: "Joins & Aggregations", videoId: "bWPMSSsVdPk", duration: "40 min", completed: false },
+              { title: "Database Normalization", videoId: "bWPMSSsVdPk", duration: "35 min", completed: false }
+            ],
+            quiz: { questions: [] }
+          }
+        ]
+      },
+      'iot-embedded': {
+        title: "IoT & Embedded Systems",
+        modules: [
+          {
+            weekNumber: 1,
+            title: "Electronics & Arduino",
+            lessons: [
+              { title: "Microcontroller Basics", videoId: "bWPMSSsVdPk", duration: "45 min", completed: false },
+              { title: "Cloud Integration", videoId: "bWPMSSsVdPk", duration: "50 min", completed: false }
+            ],
+            quiz: { questions: [] }
+          }
+        ]
+      },
+      'autocad-civil': {
+        title: "AutoCAD & Revit for Civil Engineers",
+        modules: [
+          {
+            weekNumber: 1,
+            title: "Civil Design Basics",
+            lessons: [
+              { title: "2D Drafting Foundations", videoId: "bWPMSSsVdPk", duration: "50 min", completed: false },
+              { title: "BIM Modeler Overview", videoId: "bWPMSSsVdPk", duration: "55 min", completed: false }
+            ],
+            quiz: { questions: [] }
+          }
+        ]
+      },
+      'solidworks-mech': {
+        title: "SolidWorks Masterclass",
+        modules: [
+          {
+            weekNumber: 1,
+            title: "Mechanical CAD Design",
+            lessons: [
+              { title: "3D Part Modeling", videoId: "bWPMSSsVdPk", duration: "60 min", completed: false },
+              { title: "Assembly & FEA", videoId: "bWPMSSsVdPk", duration: "60 min", completed: false }
+            ],
+            quiz: { questions: [] }
+          }
+        ]
+      }
+    };
+
+    setTimeout(() => {
+      // Use enrollmentId as slug for demo
+      setCourse(courseDataMap[enrollmentId] || courseDataMap['full-stack-web-dev']);
       setLoading(false);
     }, 1000);
   }, [enrollmentId]);
@@ -107,6 +247,12 @@ const Learning = () => {
   const currentModule = course.modules[activeModule];
   const currentLesson = currentModule.lessons[activeLesson];
 
+  // Calculate actual progress
+  const totalLessons = course.modules.reduce((acc, m) => acc + m.lessons.length, 0);
+  const completedLessons = course.modules.reduce((acc, m) => 
+    acc + m.lessons.filter(l => l.completed).length, 0);
+  const progressPercentage = Math.round((completedLessons / totalLessons) * 100);
+
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-50">
       <Sidebar />
@@ -127,9 +273,9 @@ const Learning = () => {
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Your Progress</p>
               <div className="flex items-center gap-2 mt-1">
                 <div className="w-32 bg-gray-100 h-1.5 rounded-full overflow-hidden">
-                  <div className="bg-brand h-full w-[45%]" />
+                  <div className="bg-brand h-full transition-all duration-500" style={{ width: `${progressPercentage}%` }} />
                 </div>
-                <span className="text-xs font-bold text-gray-700">45%</span>
+                <span className="text-xs font-bold text-gray-700">{progressPercentage}%</span>
               </div>
             </div>
             <div className="flex items-center gap-2 px-4 py-2 bg-orange-50 text-orange-600 rounded-xl border border-orange-100">
@@ -175,11 +321,33 @@ const Learning = () => {
                   </div>
                 </div>
 
-                <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
-                  <h3 className="text-lg font-bold text-gray-900 mb-4">About this lesson</h3>
-                  <p className="text-gray-600 leading-relaxed font-medium">
-                    In this lesson, we'll cover the fundamental concepts of {currentLesson.title}. You'll learn the best practices and see real-world examples of how to implement these features in your projects.
-                  </p>
+                <div className="grid md:grid-cols-3 gap-8">
+                  <div className="md:col-span-2 bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">About this lesson</h3>
+                    <p className="text-gray-600 leading-relaxed font-medium">
+                      In this lesson, we'll cover the fundamental concepts of {currentLesson.title}. You'll learn the best practices and see real-world examples of how to implement these features in your projects. We'll also discuss common pitfalls and how to avoid them.
+                    </p>
+                  </div>
+                  <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm">
+                    <h3 className="text-lg font-bold text-gray-900 mb-4">Resources</h3>
+                    <ul className="space-y-3">
+                      <li>
+                        <a href="#" className="flex items-center gap-3 text-sm font-bold text-brand hover:underline">
+                          <FileText className="h-4 w-4" /> Lesson Slides (PDF)
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" className="flex items-center gap-3 text-sm font-bold text-brand hover:underline">
+                          <ExternalLink className="h-4 w-4" /> Official Documentation
+                        </a>
+                      </li>
+                      <li>
+                        <a href="#" className="flex items-center gap-3 text-sm font-bold text-brand hover:underline">
+                          <Play className="h-4 w-4" /> Supplementary Video
+                        </a>
+                      </li>
+                    </ul>
+                  </div>
                 </div>
               </>
             ) : (

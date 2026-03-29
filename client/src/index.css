@@ -77,3 +77,136 @@
 .animate-scroll {
   animation: scroll 1.5s infinite;
 }
+
+/* Print Specific Styles */
+@media print {
+  @page {
+    margin: 1.5cm;
+    size: A4;
+  }
+
+  body {
+    background: white !important;
+    font-size: 11pt;
+    color: #1a1a1a !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Hide non-printable elements */
+  nav, 
+  aside, 
+  .no-print,
+  button,
+  .sidebar-container,
+  .tab-navigation,
+  .roadmap-form,
+  .motivation-panel,
+  [class*="bg-brand/"],
+  [class*="bg-indigo-500/"],
+  .bg-slate-900 {
+    display: none !important;
+  }
+
+  /* Layout Adjustments */
+  .max-w-5xl, .max-w-4xl {
+    max-width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Roadmap Professional Styling */
+  .roadmap-container {
+    padding: 0 !important;
+  }
+
+  .roadmap-container > div {
+    break-inside: avoid;
+  }
+
+  /* Force background colors for cards and badges */
+  .bg-brand { background-color: #6366f1 !important; color: white !important; }
+  .bg-emerald-50 { background-color: #ecfdf5 !important; }
+  .bg-indigo-50 { background-color: #eef2ff !important; }
+  .bg-amber-50 { background-color: #fffbeb !important; }
+  .bg-white { background-color: white !important; border: 1px solid #e5e7eb !important; }
+
+  /* Timeline Design */
+  .timeline-line {
+    border-left: 3px solid #6366f1 !important;
+    height: 100% !important;
+    position: absolute !important;
+    left: 20px !important;
+    top: 0 !important;
+    display: block !important;
+  }
+
+  .week-bubble {
+    border: 3px solid #6366f1 !important;
+    background: white !important;
+    color: #6366f1 !important;
+    display: flex !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 12px !important;
+    font-weight: bold !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: absolute !important;
+    left: 0 !important;
+    z-index: 10 !important;
+  }
+
+  /* Card and Grid Optimization */
+  .grid {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 15px !important;
+  }
+
+  /* For summary dashboard stats, use 3 columns */
+  .summary-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+
+  .group.bg-white {
+    break-inside: avoid;
+    padding: 15px !important;
+    border-radius: 20px !important;
+    box-shadow: none !important;
+    page-break-inside: avoid;
+  }
+
+  /* Typography */
+  h1 { font-size: 28pt !important; font-weight: 900 !important; color: black !important; margin-bottom: 10px !important; }
+  h2 { font-size: 22pt !important; font-weight: 900 !important; color: black !important; }
+  h3 { font-size: 18pt !important; font-weight: 900 !important; color: black !important; }
+  h4 { font-size: 14pt !important; font-weight: 900 !important; color: black !important; }
+
+  .text-brand { color: #4f46e5 !important; }
+  .text-gray-500 { color: #6b7280 !important; }
+
+  /* Ensure icons are visible */
+  svg {
+    stroke: currentColor !important;
+  }
+
+  /* Add PDF Footer */
+  .print-footer {
+    display: block !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 8pt;
+    color: #9ca3af;
+    padding: 10px 0;
+    border-top: 1px solid #f3f4f6;
+  }
+}

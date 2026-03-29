@@ -6,7 +6,8 @@ import {
   FileText, 
   User, 
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Sparkles
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -31,6 +32,7 @@ const Sidebar = () => {
     { name: 'Browse Courses', path: '/courses', icon: BookOpen },
     { name: 'Find Internships', path: '/internships', icon: Briefcase },
     { name: 'My Applications', path: '/applications', icon: FileText },
+    { name: 'AI Prep Tools', path: '/prep', icon: Sparkles },
     { name: 'Profile', path: '/profile', icon: User },
   ];
 
@@ -81,8 +83,8 @@ const Sidebar = () => {
       </div>
 
       {/* Mobile Bottom Nav */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around p-3 z-50">
-        {menuItems.slice(0, 4).map((item) => {
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 flex justify-around p-3 z-50 overflow-x-auto">
+        {menuItems.map((item) => {
           const Icon = item.icon;
           const isActive = location.pathname === item.path;
           return (
