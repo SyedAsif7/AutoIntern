@@ -54,12 +54,13 @@ const Dashboard = () => {
   
   // Persistence logic for Hackathon Demo
   const getSavedName = () => {
-    const savedData = localStorage.getItem('profileData');
+    const storageKey = currentUser ? `profileData_${currentUser.uid}` : 'profileData';
+    const savedData = localStorage.getItem(storageKey);
     if (savedData) {
       const parsed = JSON.parse(savedData);
       return parsed.name;
     }
-    return currentUser?.displayName || 'Syed Asif';
+    return currentUser?.displayName || 'Student';
   };
 
   const [userName, setUserName] = useState(getSavedName());
@@ -68,14 +69,16 @@ const Dashboard = () => {
   const [showReferral, setShowReferral] = useState(false);
   const [referralText, setReferralText] = useState('');
 
-  // Update name if localStorage changes (e.g., after profile save)
+  // Update name when currentUser or localStorage changes
   useEffect(() => {
+    setUserName(getSavedName());
+    
     const handleStorageChange = () => {
       setUserName(getSavedName());
     };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  }, [currentUser]);
   
   // Gamification State for Hackathon Win
   const [xp, setXp] = useState(2450);

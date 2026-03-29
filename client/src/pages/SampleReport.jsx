@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import { 
   Trophy, 
   Calendar, 
@@ -49,6 +50,7 @@ ChartJS.register(
 );
 
 const SampleReport = () => {
+  const { currentUser } = useAuth();
   const [downloadingReport, setDownloadingReport] = useState(false);
   const [downloadingCert, setDownloadingCert] = useState(false);
 
@@ -102,19 +104,37 @@ const SampleReport = () => {
     }
   };
 
-  const report = {
-    student: { 
-      name: "Syed Asif",
-      email: "syedgaffarsyedrajjak1@gmail.com",
+  // Get student data from Profile persistence logic
+  const getStudentData = () => {
+    const storageKey = currentUser ? `profileData_${currentUser.uid}` : 'profileData';
+    const savedData = localStorage.getItem(storageKey);
+    if (savedData) {
+      const parsed = JSON.parse(savedData);
+      return {
+        name: parsed.name,
+        email: parsed.email,
+        college: parsed.college || "Engineering College",
+        branch: parsed.branch || "Computer Engineering"
+      };
+    }
+    return {
+      name: currentUser?.displayName || "Student Name",
+      email: currentUser?.email || "student@example.com",
       college: "Engineering College", 
       branch: "Computer Engineering"
-    },
+    };
+  };
+
+  const studentData = getStudentData();
+
+  const report = {
+    student: studentData,
     course: { 
       title: "Full Stack Web Development", 
       domain: "Web Dev", 
       duration: 8, 
       level: "Intermediate",
-      certificateId: "AIC-2026-SA-0042"
+      certificateId: `AIC-2026-${studentData.name.split(' ').map(n => n[0]).join('')}-0042`
     },
     performance: {
       overallScore: 96,
@@ -140,7 +160,7 @@ const SampleReport = () => {
       'Quiz Master',
       'Fast Learner'
     ],
-    recommendation: "Syed Asif has demonstrated exceptional mastery in full-stack development with outstanding performance across all modules. His consistent dedication, perfect assignment submission record, and high quiz scores place him in the top 2% of candidates. He shows particular strength in React.js architecture and backend system design. Highly recommended for SDE-1 or Full Stack Developer roles at leading tech companies."
+    recommendation: `${studentData.name} has demonstrated exceptional mastery in full-stack development with outstanding performance across all modules. His consistent dedication, perfect assignment submission record, and high quiz scores place him in the top 2% of candidates. He shows particular strength in React.js architecture and backend system design. Highly recommended for SDE-1 or Full Stack Developer roles at leading tech companies.`
   };
 
   const lineData = {

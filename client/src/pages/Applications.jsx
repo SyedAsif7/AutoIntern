@@ -130,7 +130,8 @@ const Applications = () => {
   
   // Mock Data for Hackathon Demo Persistence
   const getInitialItems = () => {
-    const saved = localStorage.getItem('applicationTracker');
+    const storageKey = currentUser ? `applicationTracker_${currentUser.uid}` : 'applicationTracker';
+    const saved = localStorage.getItem(storageKey);
     if (saved) return JSON.parse(saved);
     return {
       saved: [
@@ -191,10 +192,16 @@ const Applications = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Update items when currentUser changes
+  useEffect(() => {
+    setItems(getInitialItems());
+  }, [currentUser]);
+
   // Save to localStorage whenever items change
   useEffect(() => {
-    localStorage.setItem('applicationTracker', JSON.stringify(items));
-  }, [items]);
+    const storageKey = currentUser ? `applicationTracker_${currentUser.uid}` : 'applicationTracker';
+    localStorage.setItem(storageKey, JSON.stringify(items));
+  }, [items, currentUser]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

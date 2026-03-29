@@ -26,29 +26,42 @@ const Profile = () => {
   
   // Persistence logic for Hackathon Demo
   const getInitialData = () => {
-    const savedData = localStorage.getItem('profileData');
+    const storageKey = currentUser ? `profileData_${currentUser.uid}` : 'profileData';
+    const savedData = localStorage.getItem(storageKey);
     if (savedData) return JSON.parse(savedData);
+    
+    // Default data for new users or when not logged in
     return {
-      name: currentUser?.displayName || 'Syed Asif',
-      email: currentUser?.email || 'syedgaffarsyedrajjak1@gmail.com',
+      name: currentUser?.displayName || 'Student Name',
+      email: currentUser?.email || 'email@example.com',
       phone: '9876543210',
-      college: 'VJTI Mumbai',
-      branch: 'Computer Engineering',
-      year: '3',
-      city: 'Mumbai',
-      bio: 'Passionate full-stack developer interested in React and Node.js.',
-      skills: ['React', 'JavaScript', 'Tailwind CSS', 'Node.js', 'MongoDB'],
-      linkedinUrl: 'https://linkedin.com/in/adityasharma',
-      githubUrl: 'https://github.com/adityasharma',
-      portfolioUrl: 'https://aditya.dev',
+      college: 'Not Specified',
+      branch: 'Not Specified',
+      year: '1',
+      city: 'Not Specified',
+      bio: 'Tell us about yourself!',
+      skills: ['React', 'JavaScript'],
+      linkedinUrl: '',
+      githubUrl: '',
+      portfolioUrl: '',
       isPublic: true,
     };
   };
 
   const [formData, setFormData] = useState(getInitialData());
-  const [profilePic, setProfilePic] = useState(localStorage.getItem('profilePic') || null);
+  const [profilePic, setProfilePic] = useState(() => {
+    const storageKey = currentUser ? `profilePic_${currentUser.uid}` : 'profilePic';
+    return localStorage.getItem(storageKey) || null;
+  });
   const [newSkill, setNewSkill] = useState('');
   const [showSkillInput, setShowSkillInput] = useState(false);
+
+  // Update form data when currentUser changes
+  useEffect(() => {
+    setFormData(getInitialData());
+    const picKey = currentUser ? `profilePic_${currentUser.uid}` : 'profilePic';
+    setProfilePic(localStorage.getItem(picKey) || null);
+  }, [currentUser]);
 
   const handlePicUpload = (e) => {
     const file = e.target.files[0];
@@ -57,7 +70,8 @@ const Profile = () => {
       reader.onloadend = () => {
         const base64String = reader.result;
         setProfilePic(base64String);
-        localStorage.setItem('profilePic', base64String);
+        const picKey = currentUser ? `profilePic_${currentUser.uid}` : 'profilePic';
+        localStorage.setItem(picKey, base64String);
       };
       reader.readAsDataURL(file);
     }
@@ -79,8 +93,12 @@ const Profile = () => {
     e.preventDefault();
     setLoading(true);
     
-    // Persist to localStorage
-    localStorage.setItem('profileData', JSON.stringify(formData));
+    // Persist to localStorage with user-specific key
+    const storageKey = currentUser ? `profileData_${currentUser.uid}` : 'profileData';
+    localStorage.setItem(storageKey, JSON.stringify(formData));
+    
+    // Trigger storage event for other components (like Dashboard)
+    window.dispatchEvent(new Event('storage'));
     
     // Mock API call
     setTimeout(() => {
@@ -92,7 +110,8 @@ const Profile = () => {
   const handleCancel = () => {
     // Reset to last saved state from localStorage
     setFormData(getInitialData());
-    setProfilePic(localStorage.getItem('profilePic') || null);
+    const picKey = currentUser ? `profilePic_${currentUser.uid}` : 'profilePic';
+    setProfilePic(localStorage.getItem(picKey) || null);
     toast('Changes discarded', { icon: 'ℹ️' });
   };
 
