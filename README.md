@@ -6,6 +6,10 @@
 
 **AutoIntern** is an AI-powered student career portal designed to bridge the discovery and preparation gap for engineering and diploma students, specifically targeting Tier-2 and Tier-3 institutions. Developed for the **TECH-XCLERATE 2k26 National Level Hackathon**.
 
+### 🔗 Live Links
+- **Live Demo:** [auto-intern-lemon.vercel.app](https://auto-intern-lemon.vercel.app)
+- **API Server:** [autointern-backend-6u4v.onrender.com](https://autointern-backend-6u4v.onrender.com)
+
 ---
 
 ## 🏆 Hackathon Context: TECH-XCLERATE 2k26
