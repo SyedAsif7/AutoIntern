@@ -178,7 +178,7 @@ const AdminDashboard = () => {
         <div className="p-6 mt-auto border-t border-slate-100">
           <div className="bg-brand/5 p-5 rounded-[2rem] border border-brand/10">
             <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm font-black text-brand border border-brand/10">SA</div>
+              <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-sm font-black text-brand border border-brand/10">AD</div>
               <div className="overflow-hidden">
                 <p className="text-xs font-black text-slate-900 truncate">System Admin</p>
                 <p className="text-[10px] font-bold text-slate-500 truncate">{currentUser.email}</p>
@@ -188,7 +188,7 @@ const AdminDashboard = () => {
               onClick={handleLogout}
               className="w-full py-2.5 bg-white border border-brand/20 text-brand text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-brand hover:text-white transition-all"
             >
-              Sign Out
+              Log Out
             </button>
           </div>
         </div>
