@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 import { 
   Compass, 
   MessageSquare, 
@@ -23,7 +25,8 @@ import {
   Github,
   FileText,
   Globe,
-  ExternalLink
+  ExternalLink,
+  Loader2
 } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 import { motion, AnimatePresence } from 'framer-motion';
