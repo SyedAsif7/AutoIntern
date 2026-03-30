@@ -724,16 +724,19 @@ const Dashboard = () => {
                   { label: 'Find Internships', icon: Briefcase, color: 'from-purple-500 to-pink-500', path: '/internships' },
                   { label: 'My Applications', icon: FileText, color: 'from-amber-500 to-orange-500', path: '/applications' },
                   { label: 'My Reports', icon: FileText, color: 'from-emerald-500 to-green-500', path: '/sample-report' },
-                ].map((link, i) => (
-                  <Link key={i} to={link.path} className="group block">
-                    <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-lg shadow-gray-100/50 hover:shadow-xl hover:shadow-indigo-100/50 hover:-translate-y-1 transition-all duration-300 flex flex-col items-center gap-3">
-                      <div className={`w-14 h-14 bg-gradient-to-br ${link.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
-                        <link.icon className="h-7 w-7 text-white" />
+                ].map((link, i) => {
+                  const Icon = link.icon;
+                  return (
+                    <Link key={i} to={link.path} className="group block">
+                      <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-lg shadow-gray-100/50 hover:shadow-xl hover:shadow-indigo-100/50 hover:-translate-y-1 transition-all duration-300 flex flex-col items-center gap-3">
+                        <div className={`w-14 h-14 bg-gradient-to-br ${link.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
+                          <Icon className="h-7 w-7 text-white" />
+                        </div>
+                        <span className="text-xs font-bold text-gray-700 text-center">{link.label}</span>
                       </div>
-                      <span className="text-xs font-bold text-gray-700 text-center">{link.label}</span>
-                    </div>
-                  </Link>
-                ))}
+                    </Link>
+                  );
+                })}
               </div>
             </section>
           </div>
@@ -993,19 +996,22 @@ const Dashboard = () => {
                 </div>
 
                 <div className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                  {studyNotes.map((note, i) => (
-                    <div key={i} className="p-5 bg-gray-50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-md transition-all duration-300 group">
-                      <div className="flex items-center gap-4 mb-3">
-                        <div className={`w-10 h-10 ${note.bg} ${note.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                          <note.icon className="h-5 w-5" />
+                  {studyNotes.map((note, i) => {
+                    const Icon = note.icon;
+                    return (
+                      <div key={i} className="p-5 bg-gray-50 rounded-2xl border border-gray-100 hover:bg-white hover:shadow-md transition-all duration-300 group">
+                        <div className="flex items-center gap-4 mb-3">
+                          <div className={`w-10 h-10 ${note.bg} ${note.color} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                            <Icon className="h-5 w-5" />
+                          </div>
+                          <h3 className="text-base font-black text-gray-900">{note.title}</h3>
                         </div>
-                        <h3 className="text-base font-black text-gray-900">{note.title}</h3>
+                        <p className="text-sm text-gray-600 font-medium leading-relaxed">
+                          {note.content}
+                        </p>
                       </div>
-                      <p className="text-sm text-gray-600 font-medium leading-relaxed">
-                        {note.content}
-                      </p>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-gray-100">

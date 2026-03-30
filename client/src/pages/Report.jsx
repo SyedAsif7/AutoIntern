@@ -208,15 +208,18 @@ const Report = () => {
               { label: 'Total Hours', value: report.performance.totalTimeSpentHours, icon: Clock, color: 'text-blue-500', bg: 'bg-blue-50' },
               { label: 'Consistency', value: `${report.performance.consistencyScore}%`, icon: Flame, color: 'text-orange-500', bg: 'bg-orange-50' },
               { label: 'Assignments', value: `${report.performance.assignmentsSubmitted}/${report.performance.assignmentsTotal}`, icon: CheckCircle2, color: 'text-emerald-500', bg: 'bg-emerald-50' },
-            ].map((stat, i) => (
-              <div key={i} className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm">
-                <div className={`${stat.bg} ${stat.color} w-10 h-10 rounded-xl flex items-center justify-center mb-3`}>
-                  <stat.icon className="h-6 w-6" />
+            ].map((stat, i) => {
+              const Icon = stat.icon;
+              return (
+                <div key={i} className="bg-white p-5 rounded-3xl border border-gray-100 shadow-sm">
+                  <div className={`${stat.bg} ${stat.color} w-10 h-10 rounded-xl flex items-center justify-center mb-3`}>
+                    <Icon className="h-6 w-6" />
+                  </div>
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{stat.label}</p>
+                  <p className="text-xl font-bold text-gray-900 mt-1">{stat.value}</p>
                 </div>
-                <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">{stat.label}</p>
-                <p className="text-xl font-bold text-gray-900 mt-1">{stat.value}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Charts Section */}

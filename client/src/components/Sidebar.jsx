@@ -7,7 +7,8 @@ import {
   User, 
   LogOut,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  ShieldCheck
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -15,7 +16,7 @@ import toast from 'react-hot-toast';
 const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, isAdmin } = useAuth();
 
   const handleLogout = async () => {
     try {
@@ -35,6 +36,10 @@ const Sidebar = () => {
     { name: 'AI Prep Tools', path: '/prep', icon: Sparkles },
     { name: 'Profile', path: '/profile', icon: User },
   ];
+
+  if (isAdmin) {
+    menuItems.push({ name: 'Admin Dashboard', path: '/admin', icon: ShieldCheck });
+  }
 
   return (
     <>

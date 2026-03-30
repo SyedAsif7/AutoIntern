@@ -21,11 +21,21 @@ export const AuthProvider = ({ children }) => {
     return createUserWithEmailAndPassword(email, password);
   };
 
-  const login = (email, password) => {
-    return signInWithEmailAndPassword(email, password);
+  const login = async (email, password) => {
+    const cleanEmail = email.trim().toLowerCase();
+    
+    // Special check for Admin (Demo Access)
+    if (cleanEmail === 'admin@autointern.com' && password === 'admin123') {
+      const mockAdmin = { email: 'admin@autointern.com', uid: 'admin-demo-id', displayName: 'System Admin' };
+      setCurrentUser(mockAdmin);
+      localStorage.setItem('currentUser', JSON.stringify(mockAdmin));
+      return mockAdmin;
+    }
+    return signInWithEmailAndPassword(cleanEmail, password);
   };
 
   const logout = () => {
+    localStorage.removeItem('currentUser');
     return signOut();
   };
 
@@ -38,8 +48,22 @@ export const AuthProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    // Check for saved user on initial load
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      setCurrentUser(JSON.parse(savedUser));
+    }
+
     const unsubscribe = onAuthStateChanged((user) => {
-      setCurrentUser(user);
+      if (user) {
+        setCurrentUser(user);
+        localStorage.setItem('currentUser', JSON.stringify(user));
+      } else {
+        const stillMock = localStorage.getItem('currentUser');
+        if (!stillMock) {
+          setCurrentUser(null);
+        }
+      }
       setLoading(false);
     });
     return unsubscribe;
@@ -52,6 +76,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     loginWithGoogle,
     resetPassword,
+    isAdmin: currentUser?.email?.toLowerCase() === 'admin@autointern.com'
   };
 
   return (

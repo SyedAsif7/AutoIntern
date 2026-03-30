@@ -243,13 +243,16 @@ const SampleReport = () => {
                 { label: 'Project Score', value: `${report.performance.projectScore}%`, icon: Award, color: 'text-pink-600', bg: 'bg-pink-50' },
                 { label: 'Lessons Done', value: report.performance.totalLessonsCompleted, icon: BookOpen, color: 'text-blue-600', bg: 'bg-blue-50' },
                 { label: 'Assignments', value: `${report.performance.assignmentsSubmitted}/${report.performance.assignmentsTotal}`, icon: CheckCircle2, color: 'text-green-600', bg: 'bg-green-50' },
-              ].map((stat, i) => (
-                <div key={i} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
-                  <stat.icon className={`w-6 h-6 ${stat.color} mb-4`} />
-                  <p className="text-2xl font-black text-slate-900">{stat.value}</p>
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">{stat.label}</p>
-                </div>
-              ))}
+              ].map((stat, i) => {
+                const Icon = stat.icon;
+                return (
+                  <div key={i} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
+                    <Icon className={`w-6 h-6 ${stat.color} mb-4`} />
+                    <p className="text-2xl font-black text-slate-900">{stat.value}</p>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">{stat.label}</p>
+                  </div>
+                );
+              })}
             </div>
 
             {/* Performance Chart */}

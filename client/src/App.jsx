@@ -1,8 +1,16 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate, Link } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import AICareerMentor from './components/AICareerMentor.jsx';
+
+// Protected Admin Route
+const AdminRoute = ({ children }) => {
+  const { currentUser, isAdmin, loading } = useAuth();
+  if (loading) return <PageSkeleton />;
+  if (!currentUser || !isAdmin) return <Navigate to="/login" replace />;
+  return children;
+};
 
 // Lazy load all pages for better performance
 const Landing = lazy(() => import('./pages/Landing.jsx'));
@@ -102,7 +110,11 @@ function App() {
                 <Route path="/my-learning/:enrollmentId/report" element={<Report />} />
 
                 {/* Protected Admin Routes */}
-                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/admin" element={
+                  <AdminRoute>
+                    <AdminDashboard />
+                  </AdminRoute>
+                } />
 
                 {/* Fallback */}
                 <Route path="/404" element={

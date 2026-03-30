@@ -108,15 +108,18 @@ const Landing = () => {
               { label: 'Active Courses', value: '45+', icon: BookOpen },
               { label: 'Certificates Issued', value: '8k+', icon: Award },
               { label: 'Hiring Partners', value: '150+', icon: Globe },
-            ].map((stat, i) => (
-              <div key={i} className="text-center group">
-                <div className="mx-auto w-14 h-14 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 border border-white/20">
-                  <stat.icon className="h-7 w-7 text-white" />
+            ].map((stat, i) => {
+              const Icon = stat.icon;
+              return (
+                <div key={i} className="text-center group">
+                  <div className="mx-auto w-14 h-14 bg-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300 border border-white/20">
+                    <Icon className="h-7 w-7 text-white" />
+                  </div>
+                  <p className="text-4xl font-black text-white">{stat.value}</p>
+                  <p className="text-xs font-bold text-white/70 uppercase tracking-widest mt-2">{stat.label}</p>
                 </div>
-                <p className="text-4xl font-black text-white">{stat.value}</p>
-                <p className="text-xs font-bold text-white/70 uppercase tracking-widest mt-2">{stat.label}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
         
@@ -147,20 +150,23 @@ const Landing = () => {
               { title: 'Enroll', desc: 'Complete 4-8 week certification courses built for industry roles.', icon: BookOpen, color: 'from-indigo-400 to-purple-500' },
               { title: 'Track', desc: 'Maintain daily learning streaks and monitor your progress.', icon: Trophy, color: 'from-amber-400 to-orange-500' },
               { title: 'Certify', desc: 'Get verified certificates and reports to share with recruiters.', icon: Award, color: 'from-emerald-400 to-green-500' },
-            ].map((step, i) => (
-              <div key={i} className="relative group">
-                <div className="bg-white/10 backdrop-blur-xl p-8 rounded-3xl border border-white/20 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 h-full">
-                  <div className={`${step.color} text-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300`}>
-                    <step.icon className="h-8 w-8" />
+            ].map((step, i) => {
+              const Icon = step.icon;
+              return (
+                <div key={i} className="relative group">
+                  <div className="bg-white/10 backdrop-blur-xl p-8 rounded-3xl border border-white/20 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 h-full">
+                    <div className={`${step.color} text-white w-16 h-16 rounded-2xl flex items-center justify-center mb-6 shadow-xl group-hover:scale-110 transition-transform duration-300`}>
+                      <Icon className="h-8 w-8" />
+                    </div>
+                    <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-full flex items-center justify-center text-sm font-black shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                      {i + 1}
+                    </div>
+                    <h3 className="text-2xl font-black text-white mb-3">{step.title}</h3>
+                    <p className="text-white/80 font-medium text-sm leading-relaxed">{step.desc}</p>
                   </div>
-                  <div className="absolute -top-3 -right-3 w-8 h-8 bg-gradient-to-br from-amber-400 to-orange-500 text-white rounded-full flex items-center justify-center text-sm font-black shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
-                    {i + 1}
-                  </div>
-                  <h3 className="text-2xl font-black text-white mb-3">{step.title}</h3>
-                  <p className="text-white/80 font-medium text-sm leading-relaxed">{step.desc}</p>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>

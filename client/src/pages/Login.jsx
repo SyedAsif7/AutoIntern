@@ -17,10 +17,17 @@ const Login = () => {
     try {
       setError('');
       setLoading(true);
-      await login(email, password);
-      navigate('/dashboard');
+      
+      const user = await login(email, password);
+      
+      if (email.trim().toLowerCase() === 'admin@autointern.com') {
+        navigate('/admin');
+      } else {
+        navigate('/dashboard');
+      }
     } catch (err) {
-      setError('Failed to log in. Please check your credentials.');
+      console.error("Login Error:", err);
+      setError(`Login failed: ${err.message || 'Please check your credentials.'}`);
     } finally {
       setLoading(false);
     }
@@ -69,6 +76,8 @@ const Login = () => {
             {error}
           </div>
         )}
+
+
 
         <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
           <div className="space-y-4">

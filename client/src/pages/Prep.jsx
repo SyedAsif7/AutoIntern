@@ -283,7 +283,7 @@ const RoadmapGenerator = () => {
             </div>
           </div>
 
-          {/* Summary Dashboard */}
+            {/* Summary Dashboard */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 summary-grid">
             <div className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center gap-6 group hover:shadow-md transition-shadow">
               <div className="w-16 h-16 bg-brand/5 text-brand rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
@@ -304,18 +304,21 @@ const RoadmapGenerator = () => {
               { label: 'Intensity', value: roadmap.summary.totalHours, sub: 'Targeted Study', icon: Clock, color: 'text-indigo-600', bg: 'bg-indigo-50' },
               { label: 'Milestones', value: roadmap.summary.totalTasks, sub: 'Industry Skills', icon: CheckCircle2, color: 'text-emerald-600', bg: 'bg-emerald-50' },
               { label: 'Commitment', value: roadmap.summary.completionEstimate, sub: 'To Job Ready', icon: Target, color: 'text-amber-600', bg: 'bg-amber-50' }
-            ].map((stat, i) => (
-              <div key={i} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center gap-6 group hover:shadow-md transition-shadow">
-                <div className={`w-16 h-16 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}>
-                  <stat.icon className="h-8 w-8" />
+            ].map((stat, i) => {
+              const Icon = stat.icon;
+              return (
+                <div key={i} className="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm flex items-center gap-6 group hover:shadow-md transition-shadow">
+                  <div className={`w-16 h-16 ${stat.bg} ${stat.color} rounded-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}>
+                    <Icon className="h-8 w-8" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">{stat.label}</p>
+                    <p className="text-2xl font-black text-gray-900 leading-none mb-1">{stat.value}</p>
+                    <p className="text-xs text-gray-500 font-bold">{stat.sub}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">{stat.label}</p>
-                  <p className="text-2xl font-black text-gray-900 leading-none mb-1">{stat.value}</p>
-                  <p className="text-xs text-gray-500 font-bold">{stat.sub}</p>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Timeline Structure */}
@@ -574,13 +577,16 @@ const MockInterview = () => {
                 { title: 'Real-time Analysis', desc: 'Instant scoring and feedback.', icon: Zap },
                 { title: 'Industry Topics', desc: 'Questions from top tech firms.', icon: Target },
                 { title: 'Behavioral Prep', desc: 'Master the STAR method.', icon: User }
-              ].map((feature, i) => (
-                <div key={i} className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-                  <feature.icon className="h-6 w-6 text-brand mb-3" />
-                  <h4 className="font-black text-gray-900 text-sm mb-1">{feature.title}</h4>
-                  <p className="text-xs text-gray-500 font-medium">{feature.desc}</p>
-                </div>
-              ))}
+              ].map((feature, i) => {
+                const Icon = feature.icon;
+                return (
+                  <div key={i} className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                    <Icon className="h-6 w-6 text-brand mb-3" />
+                    <h4 className="font-black text-gray-900 text-sm mb-1">{feature.title}</h4>
+                    <p className="text-xs text-gray-500 font-medium">{feature.desc}</p>
+                  </div>
+                );
+              })}
             </div>
 
             <button 
@@ -830,12 +836,15 @@ const ResumeAnalyser = () => {
                   { label: 'ATS Scoring', icon: Target },
                   { label: 'Skill Matching', icon: BrainCircuit },
                   { label: 'Actionable Tips', icon: Sparkles }
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-2 px-5 py-2.5 bg-gray-50 rounded-xl text-xs font-black text-gray-600 border border-gray-100">
-                    <item.icon className="h-4 w-4 text-brand" />
-                    {item.label}
-                  </div>
-                ))}
+                ].map((item, i) => {
+                  const Icon = item.icon;
+                  return (
+                    <div key={i} className="flex items-center gap-2 px-5 py-2.5 bg-gray-50 rounded-xl text-xs font-black text-gray-600 border border-gray-100">
+                      <Icon className="h-4 w-4 text-brand" />
+                      {item.label}
+                    </div>
+                  );
+                })}
               </div>
             </div>
 
