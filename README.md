@@ -39,19 +39,35 @@ AutoIntern provides a comprehensive ecosystem for career success:
 
 1.  **AI Internship Matcher:** Matches internships by branch, skills, and city with a personalized match % score.
 2.  **Certification Courses:** 4 to 8-week structured modules with weekly quizzes, assignments, and a daily learning tracker.
-3.  **AI Prep Toolkit:** Personalized 2-week roadmaps, AI-driven mock interview feedback, and resume gap analysis.
-4.  **Performance Reports:** Automated PDF reports with daily logs, consistency scores, and verified downloadable certificates.
+3.  **AI Prep Toolkit:** 
+    - **Roadmap Generator:** Personalized 4-week timelines with persistent progress tracking.
+    - **JD Matcher:** AI-driven comparison between user resumes and job descriptions.
+    - **Mock Interview:** Interactive simulator with real-time feedback.
+    - **Resume Analyser:** Deep-dive into resume gaps and formatting fixes.
+4.  **Admin Portal:** High-fidelity management suite for tracking student growth, course catalog management, and internship desk operations.
+5.  **Performance Reports:** Automated PDF reports with daily logs, consistency scores, and verified downloadable certificates.
 
 ---
 
-## 🛠 Technology Stack
+## � Demo Access
+To explore the platform during the evaluation:
+
+| Role | Email | Password |
+| :--- | :--- | :--- |
+| **Student** | `syedgaffarsyedrajjak1@gmail.com` | `123456` |
+| **Admin** | `admin@autointern.com` | `admin123` |
+
+---
+
+## �🛠 Technology Stack
 
 ### Frontend
 - **React 18 + Vite** (Fast, modern UI)
 - **Tailwind CSS** (Premium styling)
-- **Chart.js** (Visual analytics & progress tracking)
+- **Chart.js + react-chartjs-2** (Visual analytics & progress tracking)
+- **Lucide React** (Consistent, professional iconography)
 - **Framer Motion** (Smooth animations)
-- **dnd-kit** (Kanban-style application tracking)
+- **React Hot Toast** (Real-time notifications)
 
 ### Backend
 - **Node.js + Express** (Scalable API)
@@ -64,6 +80,8 @@ AutoIntern provides a comprehensive ecosystem for career success:
 - **PDFKit** (Dynamic PDF Generation for certificates/reports)
 - **pdf-parse** (AI Resume reading)
 - **Nodemailer** (Automated email alerts)
+- **Vercel** (Frontend Deployment)
+- **Render** (Backend Hosting)
 
 ---
 
@@ -104,6 +122,7 @@ AutoIntern provides a comprehensive ecosystem for career success:
 - **Preparation:** Tackles the #1 reason students aren't hired—lack of personalized prep.
 - **Consistency:** Streak systems and daily tracking build long-term study habits.
 - **Trust:** Verified certificates and detailed reports build recruiter confidence.
+- **Admin Control:** Streamlined operations for platform managers to scale content.
 
 ### Future Roadmap
 - **Live Integration:** Connect with AICTE and company career portals via APIs.
